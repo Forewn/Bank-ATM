@@ -27,6 +27,7 @@ void checkBalance(float balance);
 float depositBalance(float balance, bool *pHaveMoney);
 float withdrawBalance(float balance, bool haveMoney);
 void drawSquare(int xleft, int xright, int yup, int ydown);
+void doSquare();
 
 
 //funcion principal
@@ -59,22 +60,13 @@ int main(){
     do
     {
         //opciones
-        gotoxy(20, 9); cout<<"Seleccione una opcion:";
-        //Boton superior izquierdo
-        drawSquare(0, 5, 12, 14);
-        //Boton superior derecho
-        drawSquare(63, 69, 12, 14);
-        //Boton inferior izquierdo
-        drawSquare(0, 5, 17, 19);
-        //Boton inferior derecho
-        drawSquare(63, 69, 17, 19);
-
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY | BACKGROUND_BLUE);
+        gotoxy(26, 9); cout<<"Seleccione una opcion:";
+        doSquare();
         gotoxy(6, 13); cout<<"1.Revisar balance";
         gotoxy(6, 18); cout<<"2.Depositar";
         gotoxy(54, 13); cout<<"3.Retirar";
         gotoxy(56, 18); cout<<"4.Salir";
-        gotoxy(25, 20); cout<<">>";
+        gotoxy(36, 20); cout<<">>";
         choice = getche();
         system("cls");
 
@@ -123,13 +115,14 @@ float depositBalance(float balance, bool *pHaveMoney){
     float aux;
 
     //opciones de retiro
-    gotoxy(20, 6); cout<<"Balance: "<<balance;
-    gotoxy(20, 8); cout<<"Monto: ";
-    gotoxy(0, 12); cout<<"1.20";
-    gotoxy(0, 14); cout<<"2.50";
-    gotoxy(45, 12); cout<<"3.100";
-    gotoxy(45, 14); cout<<"4.otro";
-    gotoxy(25, 16); cout<<">>";
+    gotoxy(30, 6); cout<<"Balance: "<<balance;
+    gotoxy(34, 8); cout<<"Monto: ";
+    doSquare();
+    gotoxy(6, 13); cout<<"1.20";
+    gotoxy(6, 18); cout<<"2.50";
+    gotoxy(58, 13); cout<<"3.100";
+    gotoxy(57, 18); cout<<"4.otro";
+    gotoxy(36, 20); cout<<">>";
     choice = getche();
 
     switch (choice){
@@ -137,27 +130,30 @@ float depositBalance(float balance, bool *pHaveMoney){
         case '1':
             balance += 20 - 20*BANK;
             *pHaveMoney = true;
+            aux = 20;
             break;
 
         case '2':
             balance += 50 - 50*BANK;
-
+            *pHaveMoney = true;
+            aux = 50;
             break;
 
         case '3':
             balance += 100 - 100*BANK;
             *pHaveMoney = true;
+            aux = 100;
             break;
         //en caso de ser otro monto debe especificar un monto a depositar
         case '4':
         //bucle que repite hasta que el usuario ingrese un monto correcto
             do{
-                gotoxy(25, 16); cout<<"Monto: ";
+                gotoxy(25, 20); cout<<"Monto: ";
                 fflush(stdin);
                 cin>>aux;
                 //aca verificamos que sea un numero mayor que 0
                 if(aux <= 0){
-                    gotoxy(25, 18); cout<<"Ingrese un monto valido!!";
+                    gotoxy(25, 22); cout<<"Ingrese un monto valido!!";
                 }
             }
             //si no es mayor a 0 repite el proceso
@@ -165,17 +161,16 @@ float depositBalance(float balance, bool *pHaveMoney){
 
             //calculamos y restamos comision    
             balance += aux - aux*BANK;
-            gotoxy(25, 17); cout<<"Comision: "<<aux*BANK;
-            gotoxy(25, 18); cout<<"                             ";
-            Sleep(2000);
             *pHaveMoney = true;
             break;
         //si el usuario no ingresa ninguna de las 4 opciones sale este mensaje
         default:
             cout<<"Ingrese una opcion valida";
-            Sleep(2000);
             break;
     }
+    gotoxy(25, 21); cout<<"Comision: "<<aux*BANK;
+    gotoxy(25, 22); cout<<"                             ";
+    Sleep(2000);
     //borrar pantalla
     system("cls");
 
@@ -190,69 +185,71 @@ float withdrawBalance(float balance, bool haveMoney){
         cout<<"No tiene dinero en su cuenta!!";
     }
     else{
-        gotoxy(20, 6); cout<<"Balance: "<<balance;
-        gotoxy(20, 8); cout<<"Monto: ";
-        gotoxy(0, 12); cout<<"1.20";
-        gotoxy(0, 14); cout<<"2.50";
-        gotoxy(45, 12); cout<<"3.100";
-        gotoxy(45, 14); cout<<"4.otro";
-        gotoxy(25, 16); cout<<">>";
+        gotoxy(30, 6); cout<<"Balance: "<<balance;
+        gotoxy(34, 8); cout<<"Monto: ";
+        doSquare();
+        gotoxy(6, 13); cout<<"1.20";
+        gotoxy(6, 18); cout<<"2.50";
+        gotoxy(58, 13); cout<<"3.100";
+        gotoxy(57, 18); cout<<"4.otro";
+        gotoxy(36, 20); cout<<">>";
         choice = getche();
 
         switch(choice){
             case '1':
                 if(balance < 20 + 20*BANK){
-                    gotoxy(25, 18); cout<<"Fondos insuficientes!!";
+                    gotoxy(30, 22); cout<<"Fondos insuficientes!!";
                 }
                 else{
                     balance -= 20 + 20*BANK;
-                    gotoxy(25, 17); cout<<"Comision: "<<20*BANK;
-                    gotoxy(25, 18); cout<<"                             ";
+                    gotoxy(30, 21); cout<<"Comision: "<<20*BANK;
+                    gotoxy(30, 22); cout<<"                             ";
                 }
                 break;
             case '2':
                 if(balance < (50 + 50*BANK) ){
-                    gotoxy(25, 18); cout<<"Fondos insuficientes!!";
+                    gotoxy(30, 22); cout<<"Fondos insuficientes!!";
                 }
                 else{
                     balance -= 50 + 50*BANK;
-                    gotoxy(25, 17); cout<<"Comision: "<<50*BANK;
-                    gotoxy(25, 18); cout<<"                             ";
+                    gotoxy(30, 21); cout<<"Comision: "<<50*BANK;
+                    gotoxy(30, 22); cout<<"                             ";
                 }
                 break;
             case '3':
                 if(balance < 100 + 100*BANK){
-                    gotoxy(25, 18); cout<<"Fondos insuficientes!!";
+                    gotoxy(30, 22); cout<<"Fondos insuficientes!!";
                 }
                 else{
                     balance -= 100 + 100*BANK;
-                    gotoxy(25, 17); cout<<"Comision: "<<100*BANK;
-                    gotoxy(25, 18); cout<<"                             ";
+                    gotoxy(30, 21); cout<<"Comision: "<<100*BANK;
+                    gotoxy(30, 22); cout<<"                             ";
                 }
                 break;
 
         //igual, cuando es otro monto hay que saber que monto y verificar que sea correcto
             case '4':
-                gotoxy(25, 16); cout<<"Monto: ";
+                gotoxy(30, 21); cout<<"Monto: ";
                 //ciclo para verificar
                 do{
                     cin>>aux;
                     //si el monto es mayor que el dinero que tienes da error
                     if(aux + aux*BANK >= balance){
-                        gotoxy(25, 18); cout<<"Ingrese un monto valido!!";
+                        gotoxy(30, 23); cout<<"Ingrese un monto valido!!";
                     }
                 }
                 //esto se repite hasta que se ingrese un monto correcto
                 while(aux<=0);
                 balance -= aux + aux*BANK;
-                gotoxy(25, 17); cout<<"Comision: "<<aux*BANK;
-                gotoxy(25, 18); cout<<"                             ";
+                gotoxy(30, 22); cout<<"Comision: "<<aux*BANK;
+                gotoxy(30, 23); cout<<"                             ";
                 break;
             }
         }
   
     //calculo de comision
     Sleep(2000);
+    system("cls");
 
     return balance;
 }
@@ -272,4 +269,17 @@ void drawSquare(int xleft, int xright, int yup, int ydown){
                 }
             }
         }
+}
+
+void doSquare(){
+    //Boton superior izquierdo
+    drawSquare(0, 5, 12, 14);
+    //Boton superior derecho
+    drawSquare(63, 69, 12, 14);
+    //Boton inferior izquierdo
+    drawSquare(0, 5, 17, 19);
+    //Boton inferior derecho
+    drawSquare(63, 69, 17, 19);
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY | BACKGROUND_BLUE);
+
 }
