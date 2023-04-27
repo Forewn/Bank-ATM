@@ -70,7 +70,7 @@ int main(){
         doSquare();
         gotoxy(6, 13); cout<<"1.Registrarse";
         gotoxy(6, 18); cout<<"2.Iniciar Sesion";
-        gotoxy(54, 13); cout<<"3.Rrar";
+        gotoxy(47, 13); cout<<"3.Lista usuarios";
         gotoxy(56, 18); cout<<"4.Salir";
         gotoxy(36, 20); cout<<">>";
         choice = getche();
@@ -99,19 +99,34 @@ int main(){
 int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers){
 
     bool correct = false;
+    int aux;
     
     
     cout<<"Ingrese numero de tarjeta (Sin espacios): ";
     cin>>cardNumber[registeredUsers];
     if(checkCardNumber(cardNumber[registeredUsers]) == true){
         cout<<"Valid";
-        correct = true;
         registeredUsers++;
+        cout<<"Contrasena (4 digitos): ";
+        cin>>password[registeredUsers];
+        cout<<"Verificar contrasena: ";
+        cin>>aux;
+        if(password[registeredUsers] == aux){
+            correct = true;
+        }
+        else{
+            cout<<"contrasena incorrecta";
+            correct = false;
+            password[registeredUsers] == 0;
+        }
     }
     else{
         cout<<"Not valid";
         correct = false;
+        cardNumber[registeredUsers] = " ";
     }
+    
+
     return registeredUsers;
 
     return registeredUsers++;
