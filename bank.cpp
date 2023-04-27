@@ -30,8 +30,8 @@ float depositBalance(float balance, bool *pHaveMoney);
 float withdrawBalance(float balance, bool haveMoney);
 void drawSquare(int xleft, int xright, int yup, int ydown);
 void doSquare();
-void loggedIn();
-void signUp(string cardNumber[MAX], int password[MAX], int registeredUsers);
+float loggedIn(float Balance[MAX], int index);
+void signUp(string cardNumber[MAX], int password[MAX], int registeredUsers, float Balance[MAX]);
 int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers, string name[MAX], string id[MAX], string surname[MAX]);
 bool checkCardNumber(string cardNumber);
 int getDigit(const int number);
@@ -62,6 +62,12 @@ int main(){
     int choice, stop = false, password[MAX], registeredUsers = 0;
     string cardNumber[MAX], name[MAX], id[MAX], surname[MAX];
     char select;
+    float Balance[MAX];
+
+    //Bucle para que todos los balances del vector se inicialicen en 0
+    for(int i = 0; i < MAX; i++){
+        Balance[i] = 0.00;
+    }
 
     //bucle que mantiene tooodo el programa corriendo
     do{
@@ -83,7 +89,7 @@ int main(){
                 registeredUsers = signIn(cardNumber, password, registeredUsers, name, id, surname);
                 break;
             case '2':
-                signUp(cardNumber, password, registeredUsers);
+                signUp(cardNumber, password, registeredUsers, Balance);
                 break;
             case '3':
                 usersList(cardNumber, password, name, id, registeredUsers, surname);
@@ -149,7 +155,7 @@ int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers, strin
     return registeredUsers;
 }
 
-void signUp(string cardNumber[MAX], int password[MAX], int registeredUsers){
+void signUp(string cardNumber[MAX], int password[MAX], int registeredUsers, float Balance[MAX]){
 
     string auxcard;
     bool correct = false;
@@ -170,7 +176,7 @@ void signUp(string cardNumber[MAX], int password[MAX], int registeredUsers){
             cout<<"Ingreso exitoso!";
             Sleep(1000);
             system("cls");
-            loggedIn();
+            Balance[index] = loggedIn(Balance, index);
         }
         else{
             cout<<"Contrasena incorrecta!";
@@ -185,11 +191,11 @@ void signUp(string cardNumber[MAX], int password[MAX], int registeredUsers){
     correct = false;
 }
 
-void loggedIn(){
+float loggedIn(float Balance[MAX], int index){
     //seccion de incializacion
     bool stop, haveMoney = false;
     int choice;
-    float balance = 0.00, aux;
+    float balance = Balance[index], aux;
 
      do
     {
@@ -229,6 +235,7 @@ void loggedIn(){
         }
         //el ciclo no se va a romper mientras que stop sea false
     } while (!stop);
+    return balance;
 }
 
 bool checkCardNumber(string cardNumber){
