@@ -37,6 +37,7 @@ bool checkCardNumber(string cardNumber);
 int getDigit(const int number);
 int sumOddDigits(const string cardNumber);
 int sumEvenDigits(const string cardNumber);
+void usersList(string cardNumber[MAX], int password[MAX], int registeredUsers);
 
 //funcion principal
 int main(){
@@ -60,7 +61,7 @@ int main(){
 
     //Seccion de inicializacion
     int choice, stop = false, password[MAX], registeredUsers = 0;
-    string cardNumber[MAX];
+    string cardNumber[MAX], name[MAX], id[MAX];
     char select;
 
     //bucle que mantiene tooodo el programa corriendo
@@ -80,7 +81,7 @@ int main(){
         switch(choice)
         {
             case '1':
-                registeredUsers = signIn(cardNumber, password, registeredUsers);
+                registeredUsers = signIn(cardNumber, password, registeredUsers, name, id);
                 break;
             case '2':
                 signUp(cardNumber, password);
@@ -96,16 +97,17 @@ int main(){
     return 0;
 }
 
-int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers){
+int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers, string name[MAX], string id[MAX]){
 
     bool correct = false;
     int aux;
     
-    
-    cout<<"Ingrese numero de tarjeta (Sin espacios): ";
+    cout<<"Nombre: ";
+    cin>>name[registeredUsers];
+    cout<<"Numero de tarjeta (Sin espacios): ";
     cin>>cardNumber[registeredUsers];
     if(checkCardNumber(cardNumber[registeredUsers]) == true){
-        cout<<"Valid";
+        cout<<"Valid"<<endl;
         registeredUsers++;
         cout<<"Contrasena (4 digitos): ";
         cin>>password[registeredUsers];
@@ -113,9 +115,10 @@ int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers){
         cin>>aux;
         if(password[registeredUsers] == aux){
             correct = true;
+            cout<<"\nRegistro efectuado exitosamente";
         }
         else{
-            cout<<"contrasena incorrecta";
+            cout<<"\ncontrasena incorrecta";
             correct = false;
             password[registeredUsers] == 0;
         }
