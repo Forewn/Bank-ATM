@@ -32,12 +32,12 @@ void drawSquare(int xleft, int xright, int yup, int ydown);
 void doSquare();
 void loggedIn();
 void signUp(string cardNumber[MAX], int password[MAX]);
-int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers);
+int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers, string name[MAX], string id[MAX], string surname[MAX]);
 bool checkCardNumber(string cardNumber);
 int getDigit(const int number);
 int sumOddDigits(const string cardNumber);
 int sumEvenDigits(const string cardNumber);
-void usersList(string cardNumber[MAX], int password[MAX], int registeredUsers);
+void usersList(string cardNumber[MAX], int password[MAX], string name[MAX], string id[MAX], int registeredUsers, string surname[MAX]);
 
 //funcion principal
 int main(){
@@ -61,7 +61,7 @@ int main(){
 
     //Seccion de inicializacion
     int choice, stop = false, password[MAX], registeredUsers = 0;
-    string cardNumber[MAX], name[MAX], id[MAX];
+    string cardNumber[MAX], name[MAX], id[MAX], surname[MAX];
     char select;
 
     //bucle que mantiene tooodo el programa corriendo
@@ -81,58 +81,72 @@ int main(){
         switch(choice)
         {
             case '1':
-                registeredUsers = signIn(cardNumber, password, registeredUsers, name, id);
+                registeredUsers = signIn(cardNumber, password, registeredUsers, name, id, surname);
                 break;
             case '2':
                 signUp(cardNumber, password);
                 break;
+            case '3':
+                usersList(cardNumber, password, name, id, registeredUsers, surname);
             default:
                 stop = true;
                 break;
         }
-        cout<<"\nDesea realizar otra transaccion? (s/n): ";
-        select = toupper(getch());
+        if(!stop){
+            cout<<"\nDesea realizar otra transaccion? (s/n): ";
+            select = toupper(getch());
+        }
+        else{
+            select = 'N';
+        }
+        
      }
     while(select != 'N');
     return 0;
 }
 
-int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers, string name[MAX], string id[MAX]){
+int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers, string name[MAX], string id[MAX], string surname[MAX]){
 
-    bool correct = false;
     int aux;
     
     cout<<"Nombre: ";
     cin>>name[registeredUsers];
+    cout<<"Apellido: ";
+    cin>>surname[registeredUsers];
+    cout<<"Cedula: ";
+    cin>>id[registeredUsers];
     cout<<"Numero de tarjeta (Sin espacios): ";
     cin>>cardNumber[registeredUsers];
     if(checkCardNumber(cardNumber[registeredUsers]) == true){
         cout<<"Valid"<<endl;
-        registeredUsers++;
         cout<<"Contrasena (4 digitos): ";
         cin>>password[registeredUsers];
         cout<<"Verificar contrasena: ";
         cin>>aux;
         if(password[registeredUsers] == aux){
-            correct = true;
             cout<<"\nRegistro efectuado exitosamente";
+            registeredUsers++;
         }
         else{
             cout<<"\ncontrasena incorrecta";
-            correct = false;
             password[registeredUsers] == 0;
+            cardNumber[registeredUsers] = " ";
+            name[registeredUsers] = " ";
+            surname[registeredUsers] = " ";
+            id[registeredUsers] = " ";
         }
     }
     else{
         cout<<"Not valid";
-        correct = false;
+        password[registeredUsers] == 0;
         cardNumber[registeredUsers] = " ";
+        name[registeredUsers] = " ";
+        surname[registeredUsers] = " ";
+        id[registeredUsers] = " ";
     }
     
 
     return registeredUsers;
-
-    return registeredUsers++;
 }
 
 void signUp(string cardNumber[MAX], int password[MAX]){
@@ -193,6 +207,26 @@ bool checkCardNumber(string cardNumber){
 
     return(result % 10 == 0)? true : false;
     
+}
+
+//imprime tabla de usuarios
+void usersList(string cardNumber[MAX], int password[MAX], string name[MAX], string id[MAX], int registeredUsers, string surname[MAX]){
+    system("cls");
+    gotoxy(23, 1); cout<<"Listado de usuarios";
+    gotoxy(0, 3); cout<<"#";
+    gotoxy(3, 3); cout<<"Nombre";
+    gotoxy(13,3); cout<<"Apellido";
+    gotoxy(25, 3); cout<<"Numero de tarjeta";
+    gotoxy(44, 3); cout<<"Cedula";
+    gotoxy(54, 3); cout<<"Contrasena";
+    for(int i = 0; i<registeredUsers; i++){
+        gotoxy(0, i+4); cout<<i+1;
+        gotoxy(3,i+4); cout<<name[i];
+        gotoxy(13, i+4); cout<<surname[i];
+        gotoxy(25, i+4); cout<<cardNumber[i];
+        gotoxy(44, i+4); cout<<id[i];
+        gotoxy(54, i+4); cout<<password[i];
+    }
 }
 
 int getDigit(const int number){
