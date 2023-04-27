@@ -31,7 +31,7 @@ float withdrawBalance(float balance, bool haveMoney);
 void drawSquare(int xleft, int xright, int yup, int ydown);
 void doSquare();
 void loggedIn();
-void signUp(string cardNumber[MAX], int password[MAX]);
+void signUp(string cardNumber[MAX], int password[MAX], int registeredUsers);
 int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers, string name[MAX], string id[MAX], string surname[MAX]);
 bool checkCardNumber(string cardNumber);
 int getDigit(const int number);
@@ -41,7 +41,6 @@ void usersList(string cardNumber[MAX], int password[MAX], string name[MAX], stri
 
 //funcion principal
 int main(){
-
     //tamano de pantalla y cositas, no mires esto
     HWND console = GetConsoleWindow(), hwnd = GetConsoleWindow();
     RECT r;
@@ -84,10 +83,11 @@ int main(){
                 registeredUsers = signIn(cardNumber, password, registeredUsers, name, id, surname);
                 break;
             case '2':
-                signUp(cardNumber, password);
+                signUp(cardNumber, password, registeredUsers);
                 break;
             case '3':
                 usersList(cardNumber, password, name, id, registeredUsers, surname);
+                break;
             default:
                 stop = true;
                 break;
@@ -149,8 +149,40 @@ int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers, strin
     return registeredUsers;
 }
 
-void signUp(string cardNumber[MAX], int password[MAX]){
+void signUp(string cardNumber[MAX], int password[MAX], int registeredUsers){
 
+    string auxcard;
+    bool correct = false;
+    int index, auxpass;
+
+    cout<<"Numero de tarjeta (sin espacios): ";
+    cin>>auxcard;
+    for(int i = 0; i <= registeredUsers; i++){
+        if(auxcard.compare(cardNumber[i])){
+            index = i;
+            correct = true;
+        }
+    }
+    if(correct){
+        cout<<"Contrasena: ";
+        cin>>auxpass;
+        if(auxpass == password[index]){
+            cout<<"Ingreso exitoso!";
+            Sleep(1000);
+            system("cls");
+            loggedIn();
+        }
+        else{
+            cout<<"Contrasena incorrecta!";
+            Sleep(1000);
+        }
+    }
+    else{
+        cout<<"Numero incorrecto!";
+        Sleep(1000);
+    }
+
+    correct = false;
 }
 
 void loggedIn(){
