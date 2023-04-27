@@ -11,6 +11,8 @@ using namespace std;
 
 //esta es la comision que se cobra por cada transaccion
 #define BANK 0.015
+//max de usuarios concurrentes
+#define MAX 20
 
 //esta es una funcion que nos sirve para ordenar las cosas en la pantalla
 void gotoxy(int x,int y){  
@@ -28,7 +30,13 @@ float depositBalance(float balance, bool *pHaveMoney);
 float withdrawBalance(float balance, bool haveMoney);
 void drawSquare(int xleft, int xright, int yup, int ydown);
 void doSquare();
-
+void loggedIn();
+void signUp(string cardNumber[MAX], int password[MAX]);
+int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers);
+bool checkCardNumber(string cardNumber);
+int getDigit(const int number);
+int sumOddDigits(const string cardNumber);
+int sumEvenDigits(const string cardNumber);
 
 //funcion principal
 int main(){
@@ -42,12 +50,6 @@ int main(){
     EnableMenuItem(hMenu, SC_CLOSE, MF_BYCOMMAND | MF_GRAYED);
     EnableMenuItem(hMenu, SC_MAXIMIZE, MF_BYCOMMAND | MF_GRAYED);
 
-    //seccion de incializacion
-    bool stop, haveMoney = false;
-    int choice;
-    float balance = 0.00, aux;
-
-
     //bienvenida
     system("cls");
     system("color 1f");
@@ -56,8 +58,73 @@ int main(){
     gotoxy(20,5); cout<<"*********************************";
     Sleep(2000);
 
-    //bucle que mantiene el programa en marcha
-    do
+    //Seccion de inicializacion
+    int choice, stop = false, password[MAX], registeredUsers = 0;
+    string cardNumber[MAX];
+
+    //bucle que mantiene tooodo el programa corriendo
+    do{
+        //opciones
+        gotoxy(26, 9); cout<<"Seleccione una opcion:";
+        doSquare();
+        gotoxy(6, 13); cout<<"1.Registrarse";
+        gotoxy(6, 18); cout<<"2.Iniciar Sesion";
+        gotoxy(54, 13); cout<<"3.Rrar";
+        gotoxy(56, 18); cout<<"4.Salir";
+        gotoxy(36, 20); cout<<">>";
+        choice = getche();
+        system("cls");
+        system("pause");
+
+        switch (choice)
+        {
+            case 1:
+            
+                registeredUsers = signIn(cardNumber, password, registeredUsers);
+                break;
+            case 2:
+                
+                signUp(cardNumber, password);
+                break;
+            default:
+                stop = true;
+                break;
+        }
+     }
+    while(!stop);
+    return 0;
+}
+
+int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers){
+
+    bool correct = false;
+
+    do{
+        cout<<"Ingrese numero de tarjeta (Sin espacios): ";
+        cin>>cardNumber[registeredUsers];
+        if(checkCardNumber(cardNumber[registeredUsers]) == true){
+            cout<<"Valid";
+        }
+        else{
+            cout<<"Not valid";
+        }
+    }
+    while(!correct);
+
+    return registeredUsers++;
+}
+
+void signUp(string cardNumber[MAX], int password[MAX]){
+
+}
+
+void loggedIn(){
+    //seccion de incializacion
+    bool stop, haveMoney = false;
+    int choice;
+    float balance = 0.00, aux;
+
+     do
     {
         //opciones
         gotoxy(26, 9); cout<<"Seleccione una opcion:";
@@ -95,8 +162,44 @@ int main(){
         }
         //el ciclo no se va a romper mientras que stop sea false
     } while (!stop);
+}
 
-    return 0;
+bool checkCardNumber(string cardNumber){
+    string Mariano;
+    int result = 0;
+
+    std::cout << "Enter a credit card #: ";
+    std::cin >> cardNumber;
+
+    result = sumEvenDigits(cardNumber) + sumOddDigits(cardNumber);
+
+    return(result % 10 == 0)? true : false;
+    
+}
+
+int getDigit(const int number){
+
+    return number % 10 + (number / 10 % 10);
+}
+int sumOddDigits(const string cardNumber){
+
+    int sum = 0;
+
+    for(int i = cardNumber.size() - 1; i >= 0; i-=2){
+        sum += cardNumber[i] - '0';
+    }
+
+    return sum;
+}
+int sumEvenDigits(const string cardNumber){
+
+    int sum = 0;
+
+    for(int i = cardNumber.size() - 2; i >= 0; i-=2){
+        sum += getDigit((cardNumber[i] - '0') * 2);
+    }
+
+    return sum;
 }
 
 void checkBalance(float balance){
