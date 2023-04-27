@@ -61,6 +61,7 @@ int main(){
     //Seccion de inicializacion
     int choice, stop = false, password[MAX], registeredUsers = 0;
     string cardNumber[MAX];
+    char select;
 
     //bucle que mantiene tooodo el programa corriendo
     do{
@@ -74,42 +75,44 @@ int main(){
         gotoxy(36, 20); cout<<">>";
         choice = getche();
         system("cls");
-        system("pause");
+        
 
-        switch (choice)
+        switch(choice)
         {
-            case 1:
-            
+            case '1':
                 registeredUsers = signIn(cardNumber, password, registeredUsers);
                 break;
-            case 2:
-                
+            case '2':
                 signUp(cardNumber, password);
                 break;
             default:
                 stop = true;
                 break;
         }
+        cout<<"\nDesea realizar otra transaccion? (s/n): ";
+        select = toupper(getch());
      }
-    while(!stop);
+    while(select != 'N');
     return 0;
 }
 
 int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers){
 
     bool correct = false;
-
-    do{
-        cout<<"Ingrese numero de tarjeta (Sin espacios): ";
-        cin>>cardNumber[registeredUsers];
-        if(checkCardNumber(cardNumber[registeredUsers]) == true){
-            cout<<"Valid";
-        }
-        else{
-            cout<<"Not valid";
-        }
+    
+    
+    cout<<"Ingrese numero de tarjeta (Sin espacios): ";
+    cin>>cardNumber[registeredUsers];
+    if(checkCardNumber(cardNumber[registeredUsers]) == true){
+        cout<<"Valid";
+        correct = true;
+        registeredUsers++;
     }
-    while(!correct);
+    else{
+        cout<<"Not valid";
+        correct = false;
+    }
+    return registeredUsers;
 
     return registeredUsers++;
 }
@@ -167,9 +170,6 @@ void loggedIn(){
 bool checkCardNumber(string cardNumber){
     string Mariano;
     int result = 0;
-
-    std::cout << "Enter a credit card #: ";
-    std::cin >> cardNumber;
 
     result = sumEvenDigits(cardNumber) + sumOddDigits(cardNumber);
 
