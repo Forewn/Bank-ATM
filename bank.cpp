@@ -33,13 +33,13 @@ float withdrawBalance(float balance, bool haveMoney);
 void drawSquare(int xleft, int xright, int yup, int ydown);
 void doSquare();
 float loggedIn(float Balance[MAX], int index);
-void signUp(string cardNumber[MAX], int password[MAX], int registeredUsers, float Balance[MAX]);
-int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers, string name[MAX], string id[MAX], string surname[MAX]);
+void signUp(string cardNumber[MAX], string password[MAX], int registeredUsers, float Balance[MAX]);
+int signIn(string cardNumber[MAX], string password[MAX], int registeredUsers, string name[MAX], string id[MAX], string surname[MAX]);
 bool checkCardNumber(string cardNumber);
 int getDigit(const int number);
 int sumOddDigits(const string cardNumber);
 int sumEvenDigits(const string cardNumber);
-void usersList(string cardNumber[MAX], int password[MAX], string name[MAX], string id[MAX], int registeredUsers, string surname[MAX]);
+void usersList(string cardNumber[MAX], string password[MAX], string name[MAX], string id[MAX], int registeredUsers, string surname[MAX], float Balance[MAX]);
 
 //funcion principal
 int main(){
@@ -47,7 +47,7 @@ int main(){
     HWND console = GetConsoleWindow(), hwnd = GetConsoleWindow();
     RECT r;
     GetWindowRect(console, &r);
-    MoveWindow(console, r.left, r.top, 594, 500, TRUE);
+    MoveWindow(console, r.left, r.top, 800, 500, TRUE);
     HMENU hMenu = GetSystemMenu(hwnd, FALSE);
     EnableMenuItem(hMenu, SC_CLOSE, MF_BYCOMMAND | MF_GRAYED);
     EnableMenuItem(hMenu, SC_MAXIMIZE, MF_BYCOMMAND | MF_GRAYED);
@@ -61,14 +61,19 @@ int main(){
     Sleep(2000);
 
     //Seccion de inicializacion
-    int choice, stop = false, password[MAX], registeredUsers = 0;
-    string cardNumber[MAX], name[MAX], id[MAX], surname[MAX];
+    int choice, stop = false, registeredUsers = 0;
+    string cardNumber[MAX], name[MAX], id[MAX], surname[MAX], password[MAX];
     char select;
     float Balance[MAX];
 
     //Bucle para que todos los balances del vector se inicialicen en 0
     for(int i = 0; i < MAX; i++){
         Balance[i] = 0.00;
+        cardNumber[i].clear();
+        name[i].clear();
+        id[i].clear();
+        surname[i].clear();
+        password[i].clear();
     }
 
     //bucle que mantiene tooodo el programa corriendo
@@ -94,7 +99,7 @@ int main(){
                 signUp(cardNumber, password, registeredUsers, Balance);
                 break;
             case '3':
-                usersList(cardNumber, password, name, id, registeredUsers, surname);
+                usersList(cardNumber, password, name, id, registeredUsers, surname, Balance);
                 break;
             default:
                 stop = true;
@@ -113,9 +118,9 @@ int main(){
     return 0;
 }
 
-int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers, string name[MAX], string id[MAX], string surname[MAX]){
+int signIn(string cardNumber[MAX], string password[MAX], int registeredUsers, string name[MAX], string id[MAX], string surname[MAX]){
 
-    int aux;
+    string aux;
     
     cout<<"Nombre: ";
     cin>>name[registeredUsers];
@@ -131,13 +136,13 @@ int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers, strin
         cin>>password[registeredUsers];
         cout<<"Verificar contrasena: ";
         cin>>aux;
-        if(password[registeredUsers] == aux){
+        if(!password[registeredUsers].compare(aux)){
             cout<<"\nRegistro efectuado exitosamente";
             registeredUsers++;
         }
         else{
             cout<<"\ncontrasena incorrecta";
-            password[registeredUsers] == 0;
+            //password[registeredUsers] == 0;
             cardNumber[registeredUsers] = " ";
             name[registeredUsers] = " ";
             surname[registeredUsers] = " ";
@@ -146,7 +151,7 @@ int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers, strin
     }
     else{
         cout<<"Not valid";
-        password[registeredUsers] == 0;
+        //password[registeredUsers] == 0;
         cardNumber[registeredUsers] = " ";
         name[registeredUsers] = " ";
         surname[registeredUsers] = " ";
@@ -157,28 +162,29 @@ int signIn(string cardNumber[MAX], int password[MAX], int registeredUsers, strin
     return registeredUsers;
 }
 
-void signUp(string cardNumber[MAX], int password[MAX], int registeredUsers, float Balance[MAX]){
+void signUp(string cardNumber[MAX], string password[MAX], int registeredUsers, float Balance[MAX]){
 
-    string auxcard;
+    string auxcard, auxpass;;
     bool correct = false;
-    int index, auxpass;
+    int index;
 
     cout<<"Numero de tarjeta (sin espacios): ";
     cin>>auxcard;
     for(int i = 0; i <= registeredUsers; i++){
         if(auxcard.compare(cardNumber[i])){
-            index = i-1;
+            index = i;
             correct = true;
         }
     }
+    cout<<password[index];
     if(correct){
         cout<<"Contrasena: ";
         cin>>auxpass;
-        if(auxpass == password[index]){
+        if(auxpass.compare(password[index])){
             cout<<"Ingreso exitoso!";
             Sleep(1000);
             system("cls");
-            Balance[index] = loggedIn(Balance, index);
+            Balance[index-1] = loggedIn(Balance, index);
         }
         else{
             cout<<"Contrasena incorrecta!";
@@ -189,6 +195,7 @@ void signUp(string cardNumber[MAX], int password[MAX], int registeredUsers, floa
         cout<<"Numero incorrecto!";
         Sleep(1000);
     }
+    
 }
 
 float loggedIn(float Balance[MAX], int index){
@@ -249,7 +256,7 @@ bool checkCardNumber(string cardNumber){
 }
 
 //imprime tabla de usuarios
-void usersList(string cardNumber[MAX], int password[MAX], string name[MAX], string id[MAX], int registeredUsers, string surname[MAX]){
+void usersList(string cardNumber[MAX], string password[MAX], string name[MAX], string id[MAX], int registeredUsers, string surname[MAX], float Balance[MAX]){
     system("cls");
     gotoxy(23, 1); cout<<"Listado de usuarios";
     gotoxy(0, 3); cout<<"#";
@@ -258,6 +265,7 @@ void usersList(string cardNumber[MAX], int password[MAX], string name[MAX], stri
     gotoxy(25, 3); cout<<"Numero de tarjeta";
     gotoxy(44, 3); cout<<"Cedula";
     gotoxy(54, 3); cout<<"Contrasena";
+    gotoxy(70, 3); cout<<"Balance";
     for(int i = 0; i<registeredUsers; i++){
         gotoxy(0, i+4); cout<<i+1;
         gotoxy(3,i+4); cout<<name[i];
@@ -265,6 +273,7 @@ void usersList(string cardNumber[MAX], int password[MAX], string name[MAX], stri
         gotoxy(25, i+4); cout<<cardNumber[i];
         gotoxy(44, i+4); cout<<id[i];
         gotoxy(54, i+4); cout<<password[i];
+        gotoxy(70, i+4); cout<<Balance[i];
     }
 }
 
