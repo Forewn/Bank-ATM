@@ -1,6 +1,8 @@
 //Jhosmar Suarez
 //codigo de un cajero automatico
 
+//debug with g++.exe
+
 //librerias
 #include<iostream>
 #include<cctype>
@@ -165,7 +167,7 @@ void signUp(string cardNumber[MAX], int password[MAX], int registeredUsers, floa
     cin>>auxcard;
     for(int i = 0; i <= registeredUsers; i++){
         if(auxcard.compare(cardNumber[i])){
-            index = i;
+            index = i-1;
             correct = true;
         }
     }
@@ -187,8 +189,6 @@ void signUp(string cardNumber[MAX], int password[MAX], int registeredUsers, floa
         cout<<"Numero incorrecto!";
         Sleep(1000);
     }
-
-    correct = false;
 }
 
 float loggedIn(float Balance[MAX], int index){
