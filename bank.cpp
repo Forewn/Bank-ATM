@@ -1,13 +1,14 @@
 //Jhosmar Suarez
 //codigo de un cajero automatico
 
-//debug with g++.exe
+//debug with gdb.exe
 
 //librerias
 #include<iostream>
 #include<cctype>
 #include<conio.h>
 #include<windows.h>
+#include<iomanip>
 
 using namespace std;
 
@@ -15,6 +16,15 @@ using namespace std;
 #define BANK 0.015
 //max de usuarios concurrentes
 #define MAX 20
+
+typedef struct{
+    float Balance;
+}accountData;
+
+typedef struct{
+    accountData aData;
+    string name, password, cardNumber, id, surname;
+}userData[MAX];
 
 //esta es una funcion que nos sirve para ordenar las cosas en la pantalla
 void gotoxy(int x,int y){  
@@ -47,7 +57,7 @@ int main(){
     HWND console = GetConsoleWindow(), hwnd = GetConsoleWindow();
     RECT r;
     GetWindowRect(console, &r);
-    MoveWindow(console, r.left, r.top, 800, 500, TRUE);
+    MoveWindow(console, r.left, r.top, 665, 500, TRUE);
     HMENU hMenu = GetSystemMenu(hwnd, FALSE);
     EnableMenuItem(hMenu, SC_CLOSE, MF_BYCOMMAND | MF_GRAYED);
     EnableMenuItem(hMenu, SC_MAXIMIZE, MF_BYCOMMAND | MF_GRAYED);
@@ -55,12 +65,13 @@ int main(){
     //bienvenida
     system("cls");
     system("color 1f");
-    gotoxy(20, 3); cout<<"*********************************";
-    gotoxy(20,4); cout<<"Bienvenido al sistema de cajero!!";
-    gotoxy(20,5); cout<<"*********************************";
+    gotoxy(23, 3); cout<<"*********************************";
+    gotoxy(23,4); cout<<"Bienvenido al sistema de cajero!!";
+    gotoxy(23,5); cout<<"*********************************";
     Sleep(2000);
 
     //Seccion de inicializacion
+    userData user;
     int choice, stop = false, registeredUsers = 0;
     string cardNumber[MAX], name[MAX], id[MAX], surname[MAX], password[MAX];
     char select;
@@ -79,13 +90,13 @@ int main(){
     //bucle que mantiene tooodo el programa corriendo
     do{
         //opciones
-        gotoxy(26, 9); cout<<"Seleccione una opcion:";
+        gotoxy(28, 9); cout<<"Seleccione una opcion:";
         doSquare();
         gotoxy(6, 13); cout<<"1.Registrarse";
         gotoxy(6, 18); cout<<"2.Iniciar Sesion";
-        gotoxy(47, 13); cout<<"3.Lista usuarios";
-        gotoxy(56, 18); cout<<"4.Salir";
-        gotoxy(36, 20); cout<<">>";
+        gotoxy(56, 13); cout<<"3.Lista usuarios";
+        gotoxy(65, 18); cout<<"4.Salir";
+        gotoxy(38, 20); cout<<">>";
         choice = getche();
         system("cls");
         
@@ -101,8 +112,13 @@ int main(){
             case '3':
                 usersList(cardNumber, password, name, id, registeredUsers, surname, Balance);
                 break;
-            default:
+            case '4':
                 stop = true;
+                break;
+            default:
+                gotoxy(30,10); cout<<"Ingrese una opcion valida!";
+                Sleep(500);
+                system("cls");
                 break;
         }
         if(!stop){
@@ -170,31 +186,50 @@ void signUp(string cardNumber[MAX], string password[MAX], int registeredUsers, f
 
     cout<<"Numero de tarjeta (sin espacios): ";
     cin>>auxcard;
-    for(int i = 0; i <= registeredUsers; i++){
-        if(auxcard.compare(cardNumber[i])){
-            index = i;
-            correct = true;
-        }
+    if(!auxcard.compare("0")){
+        cout<<"Numero invalido!";
+        Sleep(1000);
+        correct = false;
     }
+    else{
+        for(int i = 0; i <= registeredUsers; i++){
+            if(auxcard.compare(cardNumber[i])){
+                index = i;
+                correct = true;
+            }
+            else{
+                correct = false;
+            }
+        }
     cout<<password[index];
+
     if(correct){
         cout<<"Contrasena: ";
         cin>>auxpass;
         if(auxpass.compare(password[index])){
-            cout<<"Ingreso exitoso!";
-            Sleep(1000);
-            system("cls");
-            Balance[index-1] = loggedIn(Balance, index);
-        }
-        else{
+            if(auxpass.compare("0")){
+                cout<<"Ingreso exitoso!";
+                Sleep(1000);
+                system("cls");
+                Balance[index-1] = loggedIn(Balance, index);
+                }
+                else{
+                    cout<<"Contrasena incorrecta!";
+                    Sleep(1000);
+                }
+            }
+            else{
             cout<<"Contrasena incorrecta!";
             Sleep(1000);
+            }
+        }
+    else{
+        cout<<"Ese numero no se encuentra registrado!";
+        Sleep(1000);
+        
         }
     }
-    else{
-        cout<<"Numero incorrecto!";
-        Sleep(1000);
-    }
+
     
 }
 
@@ -207,13 +242,13 @@ float loggedIn(float Balance[MAX], int index){
      do
     {
         //opciones
-        gotoxy(26, 9); cout<<"Seleccione una opcion:";
+        gotoxy(28, 9); cout<<"Seleccione una opcion:";
         doSquare();
         gotoxy(6, 13); cout<<"1.Revisar balance";
         gotoxy(6, 18); cout<<"2.Depositar";
-        gotoxy(54, 13); cout<<"3.Retirar";
-        gotoxy(56, 18); cout<<"4.Salir";
-        gotoxy(36, 20); cout<<">>";
+        gotoxy(63, 13); cout<<"3.Retirar";
+        gotoxy(65, 18); cout<<"4.Salir";
+        gotoxy(38, 20); cout<<">>";
         choice = getche();
         system("cls");
 
@@ -236,8 +271,13 @@ float loggedIn(float Balance[MAX], int index){
                 balance = withdrawBalance(balance, haveMoney);
                 break;
             //salir
-            default:
+            case '4':
                 stop = true;
+                break;
+            default:
+                gotoxy(30,10); cout<<"Ingrese una opcion valida!";
+                Sleep(500);
+                system("cls");
                 break;
         }
         //el ciclo no se va a romper mientras que stop sea false
@@ -273,7 +313,7 @@ void usersList(string cardNumber[MAX], string password[MAX], string name[MAX], s
         gotoxy(25, i+4); cout<<cardNumber[i];
         gotoxy(44, i+4); cout<<id[i];
         gotoxy(54, i+4); cout<<password[i];
-        gotoxy(70, i+4); cout<<Balance[i];
+        gotoxy(70, i+4); cout<<setprecision(2)<<fixed<<Balance[i];
     }
 }
 
@@ -304,10 +344,10 @@ int sumEvenDigits(const string cardNumber){
 
 void checkBalance(float balance){
     //Imprime balance
-    gotoxy(20, 6); cout<<"Balance: "<<balance;
+    gotoxy(32, 6); cout<<"Balance: "<<setprecision(2)<<fixed<<balance;
     //espera 6 segundos para borrar el mensaje
     for(int i = 6; i >= 1; i--){
-        gotoxy(12, 8); cout<<"Este mensaje desaparecera en "<<i<<"s";
+        gotoxy(24, 8); cout<<"Este mensaje desaparecera en "<<i<<"s";
         Sleep(1000);
     }
     system("cls");
@@ -318,14 +358,14 @@ float depositBalance(float balance, bool *pHaveMoney){
     float aux;
 
     //opciones de retiro
-    gotoxy(30, 6); cout<<"Balance: "<<balance;
+    gotoxy(32, 6); cout<<"Balance: "<<setprecision(2)<<fixed<<balance;
     gotoxy(34, 8); cout<<"Monto: ";
     doSquare();
     gotoxy(6, 13); cout<<"1.20";
     gotoxy(6, 18); cout<<"2.50";
-    gotoxy(58, 13); cout<<"3.100";
-    gotoxy(57, 18); cout<<"4.otro";
-    gotoxy(36, 20); cout<<">>";
+    gotoxy(67, 13); cout<<"3.100";
+    gotoxy(66, 18); cout<<"4.otro";
+    gotoxy(38, 20); cout<<">>";
     choice = getche();
 
     switch (choice){
@@ -351,12 +391,12 @@ float depositBalance(float balance, bool *pHaveMoney){
         case '4':
         //bucle que repite hasta que el usuario ingrese un monto correcto
             do{
-                gotoxy(25, 20); cout<<"Monto: ";
+                gotoxy(32, 20); cout<<"Monto: ";
                 fflush(stdin);
                 cin>>aux;
                 //aca verificamos que sea un numero mayor que 0
                 if(aux <= 0){
-                    gotoxy(25, 22); cout<<"Ingrese un monto valido!!";
+                    gotoxy(28, 22); cout<<"Ingrese un monto valido!!";
                 }
             }
             //si no es mayor a 0 repite el proceso
@@ -371,8 +411,8 @@ float depositBalance(float balance, bool *pHaveMoney){
             cout<<"Ingrese una opcion valida";
             break;
     }
-    gotoxy(25, 21); cout<<"Comision: "<<aux*BANK;
-    gotoxy(25, 22); cout<<"                             ";
+    gotoxy(32, 21); cout<<"Comision: "<<setprecision(2)<<fixed<<aux*BANK;
+    gotoxy(28, 22); cout<<"                             ";
     Sleep(2000);
     //borrar pantalla
     system("cls");
@@ -388,51 +428,51 @@ float withdrawBalance(float balance, bool haveMoney){
         cout<<"No tiene dinero en su cuenta!!";
     }
     else{
-        gotoxy(30, 6); cout<<"Balance: "<<balance;
+        gotoxy(32, 6); cout<<"Balance: "<<setprecision(2)<<fixed<<balance;
         gotoxy(34, 8); cout<<"Monto: ";
         doSquare();
         gotoxy(6, 13); cout<<"1.20";
         gotoxy(6, 18); cout<<"2.50";
-        gotoxy(58, 13); cout<<"3.100";
-        gotoxy(57, 18); cout<<"4.otro";
-        gotoxy(36, 20); cout<<">>";
+        gotoxy(67, 13); cout<<"3.100";
+        gotoxy(66, 18); cout<<"4.otro";
+        gotoxy(38, 20); cout<<">>";
         choice = getche();
 
         switch(choice){
             case '1':
                 if(balance < 20 + 20*BANK){
-                    gotoxy(30, 22); cout<<"Fondos insuficientes!!";
+                    gotoxy(32, 22); cout<<"Fondos insuficientes!!";
                 }
                 else{
                     balance -= 20 + 20*BANK;
-                    gotoxy(30, 21); cout<<"Comision: "<<20*BANK;
-                    gotoxy(30, 22); cout<<"                             ";
+                    gotoxy(34, 21); cout<<"Comision: "<<setprecision(2)<<fixed<<20*BANK;
+                    gotoxy(32, 22); cout<<"                             ";
                 }
                 break;
             case '2':
                 if(balance < (50 + 50*BANK) ){
-                    gotoxy(30, 22); cout<<"Fondos insuficientes!!";
+                    gotoxy(32, 22); cout<<"Fondos insuficientes!!";
                 }
                 else{
                     balance -= 50 + 50*BANK;
-                    gotoxy(30, 21); cout<<"Comision: "<<50*BANK;
-                    gotoxy(30, 22); cout<<"                             ";
+                    gotoxy(34, 21); cout<<"Comision: "<<setprecision(2)<<fixed<<50*BANK;
+                    gotoxy(32, 22); cout<<"                             ";
                 }
                 break;
             case '3':
                 if(balance < 100 + 100*BANK){
-                    gotoxy(30, 22); cout<<"Fondos insuficientes!!";
+                    gotoxy(32, 22); cout<<"Fondos insuficientes!!";
                 }
                 else{
                     balance -= 100 + 100*BANK;
-                    gotoxy(30, 21); cout<<"Comision: "<<100*BANK;
-                    gotoxy(30, 22); cout<<"                             ";
+                    gotoxy(34, 21); cout<<"Comision: "<<setprecision(2)<<fixed<<100*BANK;
+                    gotoxy(32, 22); cout<<"                             ";
                 }
                 break;
 
         //igual, cuando es otro monto hay que saber que monto y verificar que sea correcto
             case '4':
-                gotoxy(30, 21); cout<<"Monto: ";
+                gotoxy(36, 21); cout<<"Monto: ";
                 //ciclo para verificar
                 do{
                     cin>>aux;
@@ -444,8 +484,8 @@ float withdrawBalance(float balance, bool haveMoney){
                 //esto se repite hasta que se ingrese un monto correcto
                 while(aux<=0);
                 balance -= aux + aux*BANK;
-                gotoxy(30, 22); cout<<"Comision: "<<aux*BANK;
-                gotoxy(30, 23); cout<<"                             ";
+                gotoxy(34, 22); cout<<"Comision: "<<setprecision(2)<<fixed<<aux*BANK;
+                gotoxy(32, 23); cout<<"                             ";
                 break;
             }
         }
@@ -478,11 +518,11 @@ void doSquare(){
     //Boton superior izquierdo
     drawSquare(0, 5, 12, 14);
     //Boton superior derecho
-    drawSquare(63, 69, 12, 14);
+    drawSquare(72, 78, 12, 14);
     //Boton inferior izquierdo
     drawSquare(0, 5, 17, 19);
     //Boton inferior derecho
-    drawSquare(63, 69, 17, 19);
+    drawSquare(72, 78, 17, 19);
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY | BACKGROUND_BLUE);
 
 }
