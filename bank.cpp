@@ -21,6 +21,7 @@ using namespace std;
 
 typedef struct{
     float Balance;
+    bool haveMoney;
 }accountData;
 
 typedef struct{
@@ -133,7 +134,6 @@ int main(){
 }
 
 int signIn(int registeredUsers, userData user[]){
-
     string aux;
     bool error = false;
     cout<<"Nombre: ";
@@ -218,7 +218,7 @@ void signUp(int registeredUsers, userData user[]){
 
     string auxcard, auxpass = "0";
     bool correct = false;
-    int index;
+    int index = 0;
 
     cout<<"Numero de tarjeta (sin espacios): ";
     cin>>auxcard;
@@ -229,11 +229,11 @@ void signUp(int registeredUsers, userData user[]){
     }
     else{
         for(int i = 0; i < registeredUsers; i++){
-            if(!auxcard.compare(user[i]->cardNumber)){
+            if(auxcard.compare(user[i]->cardNumber) == 0){
                 index = i;
                 correct = true;
             }
-            else{
+            else if(correct != true && (auxcard.compare(user[i]->cardNumber))){
                 correct = false;
             }
         }
@@ -270,9 +270,16 @@ void signUp(int registeredUsers, userData user[]){
 
 float loggedIn(userData user[], int index){
     //seccion de incializacion
-    bool stop, haveMoney = false;
+    bool stop;
     int choice;
     float balance = user[index]->aData.Balance , aux;
+
+    if(user[index]->aData.Balance > 0){
+        user[index]->aData.haveMoney = true;
+    }
+    else{
+        user[index]->aData.haveMoney = false;
+    }
 
      do
     {
@@ -299,11 +306,11 @@ float loggedIn(userData user[], int index){
                 break;
             //funcion depositar balance
             case '2':
-                balance = depositBalance(balance, &haveMoney);
+                balance = depositBalance(balance, &user[index]->aData.haveMoney);
                 break;
             //funcion retirar balance
             case '3':
-                balance = withdrawBalance(balance, haveMoney);
+                balance = withdrawBalance(balance, user[index]->aData.haveMoney);
                 break;
             //salir
             case '4':
@@ -338,16 +345,16 @@ void usersList(int registeredUsers, userData user[MAX]){
     gotoxy(3, 3); cout<<"Nombre";
     gotoxy(13,3); cout<<"Apellido";
     gotoxy(25, 3); cout<<"Numero de tarjeta";
-    gotoxy(44, 3); cout<<"Cedula";
-    gotoxy(54, 3); cout<<"Contrasena";
+    gotoxy(46, 3); cout<<"Cedula";
+    gotoxy(56, 3); cout<<"Contrasena";
     gotoxy(70, 3); cout<<"Balance";
     for(int i = 0; i<registeredUsers; i++){
         gotoxy(0, i+4); cout<<i+1;
         gotoxy(3,i+4); cout<<user[i]->name;
         gotoxy(13, i+4); cout<<user[i]->surname;
         gotoxy(25, i+4); cout<<user[i]->cardNumber;
-        gotoxy(44, i+4); cout<<user[i]->id;
-        gotoxy(54, i+4); cout<<user[i]->password;
+        gotoxy(46, i+4); cout<<user[i]->id;
+        gotoxy(56, i+4); cout<<user[i]->password;
         gotoxy(70, i+4); cout<<setprecision(2)<<fixed<<user[i]->aData.Balance;
     }
 }
@@ -426,7 +433,7 @@ float depositBalance(float balance, bool *pHaveMoney){
         case '4':
         //bucle que repite hasta que el usuario ingrese un monto correcto
             do{
-                gotoxy(32, 20); cout<<"Monto: ";
+                gotoxy(32, 21); cout<<"Monto: ";
                 fflush(stdin);
                 cin>>aux;
                 //aca verificamos que sea un numero mayor que 0
@@ -446,7 +453,7 @@ float depositBalance(float balance, bool *pHaveMoney){
             cout<<"Ingrese una opcion valida";
             break;
     }
-    gotoxy(32, 21); cout<<"Comision: "<<setprecision(2)<<fixed<<aux*BANK;
+    gotoxy(32, 22); cout<<"Comision: "<<setprecision(2)<<fixed<<aux*BANK;
     gotoxy(28, 22); cout<<"                             ";
     Sleep(2000);
     //borrar pantalla
