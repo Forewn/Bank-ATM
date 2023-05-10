@@ -1,528 +1,201 @@
-//Jhosmar Suarez
-//codigo de un cajero automatico
 
-//debug with gdb.exe
+Introducción 
 
-//librerias
-#include<iostream>
-#include<cctype>
-#include<conio.h>
-#include<windows.h>
-#include<iomanip>
+La temática más exitosa en arquitectura de software en los últimos tiempos es, sin lugar a duda, la de los estilos y patrones, tanto en lo que concierne a los patrones arquitectónicos como a patrones de diseño.
 
-using namespace std;
+En este trabajo se trata una aplicación que, de un modo didáctico, sirva para la comprensión y utilización tanto de patrones arquitectónico como patrones de diseño de forma clara y correcta en la construcción de software.
 
-//esta es la comision que se cobra por cada transaccion
-#define BANK 0.015
-//max de usuarios concurrentes
-#define MAX 20
-
-typedef struct{
-    float Balance;
-}accountData;
-
-typedef struct{
-    accountData aData;
-    string name, password, cardNumber, id, surname;
-}userData[MAX];
-
-//esta es una funcion que nos sirve para ordenar las cosas en la pantalla
-void gotoxy(int x,int y){  
-      HANDLE hcon;  
-      hcon = GetStdHandle(STD_OUTPUT_HANDLE);  
-      COORD dwPos;  
-      dwPos.X = x;  
-      dwPos.Y= y;  
-      SetConsoleCursorPosition(hcon,dwPos);	  
-}
-
-//aca se listan todas las funciones excepto la principal
-void checkBalance(float balance);
-float depositBalance(float balance, bool *pHaveMoney);
-float withdrawBalance(float balance, bool haveMoney);
-void drawSquare(int xleft, int xright, int yup, int ydown);
-void doSquare();
-float loggedIn(float Balance[MAX], int index);
-void signUp(string cardNumber[MAX], string password[MAX], int registeredUsers, float Balance[MAX]);
-int signIn(string cardNumber[MAX], string password[MAX], int registeredUsers, string name[MAX], string id[MAX], string surname[MAX]);
-bool checkCardNumber(string cardNumber);
-int getDigit(const int number);
-int sumOddDigits(const string cardNumber);
-int sumEvenDigits(const string cardNumber);
-void usersList(string cardNumber[MAX], string password[MAX], string name[MAX], string id[MAX], int registeredUsers, string surname[MAX], float Balance[MAX]);
-
-//funcion principal
-int main(){
-    //tamano de pantalla y cositas, no mires esto
-    HWND console = GetConsoleWindow(), hwnd = GetConsoleWindow();
-    RECT r;
-    GetWindowRect(console, &r);
-    MoveWindow(console, r.left, r.top, 665, 500, TRUE);
-    HMENU hMenu = GetSystemMenu(hwnd, FALSE);
-    EnableMenuItem(hMenu, SC_CLOSE, MF_BYCOMMAND | MF_GRAYED);
-    EnableMenuItem(hMenu, SC_MAXIMIZE, MF_BYCOMMAND | MF_GRAYED);
-
-    //bienvenida
-    system("cls");
-    system("color 1f");
-    gotoxy(23, 3); cout<<"*********************************";
-    gotoxy(23,4); cout<<"Bienvenido al sistema de cajero!!";
-    gotoxy(23,5); cout<<"*********************************";
-    Sleep(2000);
-
-    //Seccion de inicializacion
-    userData user;
-    int choice, stop = false, registeredUsers = 0;
-    string cardNumber[MAX], name[MAX], id[MAX], surname[MAX], password[MAX];
-    char select;
-    float Balance[MAX];
-
-    //Bucle para que todos los balances del vector se inicialicen en 0
-    for(int i = 0; i < MAX; i++){
-        Balance[i] = 0.00;
-        cardNumber[i].clear();
-        name[i].clear();
-        id[i].clear();
-        surname[i].clear();
-        password[i].clear();
-    }
-
-    //bucle que mantiene tooodo el programa corriendo
-    do{
-        //opciones
-        gotoxy(28, 9); cout<<"Seleccione una opcion:";
-        doSquare();
-        gotoxy(6, 13); cout<<"1.Registrarse";
-        gotoxy(6, 18); cout<<"2.Iniciar Sesion";
-        gotoxy(56, 13); cout<<"3.Lista usuarios";
-        gotoxy(65, 18); cout<<"4.Salir";
-        gotoxy(38, 20); cout<<">>";
-        choice = getche();
-        system("cls");
-        
-
-        switch(choice)
-        {
-            case '1':
-                registeredUsers = signIn(cardNumber, password, registeredUsers, name, id, surname);
-                break;
-            case '2':
-                signUp(cardNumber, password, registeredUsers, Balance);
-                break;
-            case '3':
-                usersList(cardNumber, password, name, id, registeredUsers, surname, Balance);
-                break;
-            case '4':
-                stop = true;
-                break;
-            default:
-                gotoxy(30,10); cout<<"Ingrese una opcion valida!";
-                Sleep(500);
-                system("cls");
-                break;
-        }
-        if(!stop){
-            cout<<"\nDesea realizar otra transaccion? (s/n): ";
-            select = toupper(getch());
-        }
-        else{
-            select = 'N';
-        }
-        
-     }
-    while(select != 'N');
-    return 0;
-}
-
-int signIn(string cardNumber[MAX], string password[MAX], int registeredUsers, string name[MAX], string id[MAX], string surname[MAX]){
-
-    string aux;
-    
-    cout<<"Nombre: ";
-    cin>>name[registeredUsers];
-    cout<<"Apellido: ";
-    cin>>surname[registeredUsers];
-    cout<<"Cedula: ";
-    cin>>id[registeredUsers];
-    cout<<"Numero de tarjeta (Sin espacios): ";
-    cin>>cardNumber[registeredUsers];
-    if(checkCardNumber(cardNumber[registeredUsers]) == true){
-        cout<<"Valid"<<endl;
-        cout<<"Contrasena (4 digitos): ";
-        cin>>password[registeredUsers];
-        cout<<"Verificar contrasena: ";
-        cin>>aux;
-        if(!password[registeredUsers].compare(aux)){
-            cout<<"\nRegistro efectuado exitosamente";
-            registeredUsers++;
-        }
-        else{
-            cout<<"\ncontrasena incorrecta";
-            //password[registeredUsers] == 0;
-            cardNumber[registeredUsers] = " ";
-            name[registeredUsers] = " ";
-            surname[registeredUsers] = " ";
-            id[registeredUsers] = " ";
-        }
-    }
-    else{
-        cout<<"Not valid";
-        //password[registeredUsers] == 0;
-        cardNumber[registeredUsers] = " ";
-        name[registeredUsers] = " ";
-        surname[registeredUsers] = " ";
-        id[registeredUsers] = " ";
-    }
-    
-
-    return registeredUsers;
-}
-
-void signUp(string cardNumber[MAX], string password[MAX], int registeredUsers, float Balance[MAX]){
-
-    string auxcard, auxpass;;
-    bool correct = false;
-    int index;
-
-    cout<<"Numero de tarjeta (sin espacios): ";
-    cin>>auxcard;
-    if(!auxcard.compare("0")){
-        cout<<"Numero invalido!";
-        Sleep(1000);
-        correct = false;
-    }
-    else{
-        for(int i = 0; i <= registeredUsers; i++){
-            if(auxcard.compare(cardNumber[i])){
-                index = i;
-                correct = true;
-            }
-            else{
-                correct = false;
-            }
-        }
-    cout<<password[index];
-
-    if(correct){
-        cout<<"Contrasena: ";
-        cin>>auxpass;
-        if(auxpass.compare(password[index])){
-            if(auxpass.compare("0")){
-                cout<<"Ingreso exitoso!";
-                Sleep(1000);
-                system("cls");
-                Balance[index-1] = loggedIn(Balance, index);
-                }
-                else{
-                    cout<<"Contrasena incorrecta!";
-                    Sleep(1000);
-                }
-            }
-            else{
-            cout<<"Contrasena incorrecta!";
-            Sleep(1000);
-            }
-        }
-    else{
-        cout<<"Ese numero no se encuentra registrado!";
-        Sleep(1000);
-        
-        }
-    }
-
-    
-}
-
-float loggedIn(float Balance[MAX], int index){
-    //seccion de incializacion
-    bool stop, haveMoney = false;
-    int choice;
-    float balance = Balance[index], aux;
-
-     do
-    {
-        //opciones
-        gotoxy(28, 9); cout<<"Seleccione una opcion:";
-        doSquare();
-        gotoxy(6, 13); cout<<"1.Revisar balance";
-        gotoxy(6, 18); cout<<"2.Depositar";
-        gotoxy(63, 13); cout<<"3.Retirar";
-        gotoxy(65, 18); cout<<"4.Salir";
-        gotoxy(38, 20); cout<<">>";
-        choice = getche();
-        system("cls");
+El proyecto está dividido en dos partes fundamentales, una introducción teórica 
+a la Arquitectura de Software, Estilos, Patrones Arquitectónicos y Patrones de Diseño 
+y un caso práctico donde se plasma el análisis y aplicación de dichos patrones
+El proceso del desarrollo de sistemas de software ha ido en aumento en los últimos años, demandando la construcción de grandes y complejos sistemas que requieren la combinación de diferentes tecnologías y plataformas de hardware y software para alcanzar la funcionalidad requerida. El diseño e implementación ha pasado de una concepción monolítica y uniforme a una visión heterogénea y distribuida.
 
 
-        //dependiendo de cada opcion va a ejecutar una funcion distinta (las funciones las ves al final del codigo)
-        switch (choice)
-        {
-        
-            //funcion ver balance
-            case '1':
-                checkBalance(balance);
-                stop = false;
-                break;
-            //funcion depositar balance
-            case '2':
-                balance = depositBalance(balance, &haveMoney);
-                break;
-            //funcion retirar balance
-            case '3':
-                balance = withdrawBalance(balance, haveMoney);
-                break;
-            //salir
-            case '4':
-                stop = true;
-                break;
-            default:
-                gotoxy(30,10); cout<<"Ingrese una opcion valida!";
-                Sleep(500);
-                system("cls");
-                break;
-        }
-        //el ciclo no se va a romper mientras que stop sea false
-    } while (!stop);
-    return balance;
-}
 
-bool checkCardNumber(string cardNumber){
-    string Mariano;
-    int result = 0;
 
-    result = sumEvenDigits(cardNumber) + sumOddDigits(cardNumber);
 
-    return(result % 10 == 0)? true : false;
-    
-}
 
-//imprime tabla de usuarios
-void usersList(string cardNumber[MAX], string password[MAX], string name[MAX], string id[MAX], int registeredUsers, string surname[MAX], float Balance[MAX]){
-    system("cls");
-    gotoxy(23, 1); cout<<"Listado de usuarios";
-    gotoxy(0, 3); cout<<"#";
-    gotoxy(3, 3); cout<<"Nombre";
-    gotoxy(13,3); cout<<"Apellido";
-    gotoxy(25, 3); cout<<"Numero de tarjeta";
-    gotoxy(44, 3); cout<<"Cedula";
-    gotoxy(54, 3); cout<<"Contrasena";
-    gotoxy(70, 3); cout<<"Balance";
-    for(int i = 0; i<registeredUsers; i++){
-        gotoxy(0, i+4); cout<<i+1;
-        gotoxy(3,i+4); cout<<name[i];
-        gotoxy(13, i+4); cout<<surname[i];
-        gotoxy(25, i+4); cout<<cardNumber[i];
-        gotoxy(44, i+4); cout<<id[i];
-        gotoxy(54, i+4); cout<<password[i];
-        gotoxy(70, i+4); cout<<setprecision(2)<<fixed<<Balance[i];
-    }
-}
 
-int getDigit(const int number){
 
-    return number % 10 + (number / 10 % 10);
-}
-int sumOddDigits(const string cardNumber){
 
-    int sum = 0;
 
-    for(int i = cardNumber.size() - 1; i >= 0; i-=2){
-        sum += cardNumber[i] - '0';
-    }
 
-    return sum;
-}
-int sumEvenDigits(const string cardNumber){
 
-    int sum = 0;
 
-    for(int i = cardNumber.size() - 2; i >= 0; i-=2){
-        sum += getDigit((cardNumber[i] - '0') * 2);
-    }
 
-    return sum;
-}
 
-void checkBalance(float balance){
-    //Imprime balance
-    gotoxy(32, 6); cout<<"Balance: "<<setprecision(2)<<fixed<<balance;
-    //espera 6 segundos para borrar el mensaje
-    for(int i = 6; i >= 1; i--){
-        gotoxy(24, 8); cout<<"Este mensaje desaparecera en "<<i<<"s";
-        Sleep(1000);
-    }
-    system("cls");
-}
 
-float depositBalance(float balance, bool *pHaveMoney){
-    int choice = 0;
-    float aux;
 
-    //opciones de retiro
-    gotoxy(32, 6); cout<<"Balance: "<<setprecision(2)<<fixed<<balance;
-    gotoxy(34, 8); cout<<"Monto: ";
-    doSquare();
-    gotoxy(6, 13); cout<<"1.20";
-    gotoxy(6, 18); cout<<"2.50";
-    gotoxy(67, 13); cout<<"3.100";
-    gotoxy(66, 18); cout<<"4.otro";
-    gotoxy(38, 20); cout<<">>";
-    choice = getche();
 
-    switch (choice){
 
-        case '1':
-            balance += 20 - 20*BANK;
-            *pHaveMoney = true;
-            aux = 20;
-            break;
 
-        case '2':
-            balance += 50 - 50*BANK;
-            *pHaveMoney = true;
-            aux = 50;
-            break;
 
-        case '3':
-            balance += 100 - 100*BANK;
-            *pHaveMoney = true;
-            aux = 100;
-            break;
-        //en caso de ser otro monto debe especificar un monto a depositar
-        case '4':
-        //bucle que repite hasta que el usuario ingrese un monto correcto
-            do{
-                gotoxy(32, 20); cout<<"Monto: ";
-                fflush(stdin);
-                cin>>aux;
-                //aca verificamos que sea un numero mayor que 0
-                if(aux <= 0){
-                    gotoxy(28, 22); cout<<"Ingrese un monto valido!!";
-                }
-            }
-            //si no es mayor a 0 repite el proceso
-            while(aux <= 0);
 
-            //calculamos y restamos comision    
-            balance += aux - aux*BANK;
-            *pHaveMoney = true;
-            break;
-        //si el usuario no ingresa ninguna de las 4 opciones sale este mensaje
-        default:
-            cout<<"Ingrese una opcion valida";
-            break;
-    }
-    gotoxy(32, 21); cout<<"Comision: "<<setprecision(2)<<fixed<<aux*BANK;
-    gotoxy(28, 22); cout<<"                             ";
-    Sleep(2000);
-    //borrar pantalla
-    system("cls");
 
-    return balance;
-}
 
-float withdrawBalance(float balance, bool haveMoney){
-    int choice = 0;
-    float aux;
-    //opciones
-    if(!haveMoney){
-        cout<<"No tiene dinero en su cuenta!!";
-    }
-    else{
-        gotoxy(32, 6); cout<<"Balance: "<<setprecision(2)<<fixed<<balance;
-        gotoxy(34, 8); cout<<"Monto: ";
-        doSquare();
-        gotoxy(6, 13); cout<<"1.20";
-        gotoxy(6, 18); cout<<"2.50";
-        gotoxy(67, 13); cout<<"3.100";
-        gotoxy(66, 18); cout<<"4.otro";
-        gotoxy(38, 20); cout<<">>";
-        choice = getche();
 
-        switch(choice){
-            case '1':
-                if(balance < 20 + 20*BANK){
-                    gotoxy(32, 22); cout<<"Fondos insuficientes!!";
-                }
-                else{
-                    balance -= 20 + 20*BANK;
-                    gotoxy(34, 21); cout<<"Comision: "<<setprecision(2)<<fixed<<20*BANK;
-                    gotoxy(32, 22); cout<<"                             ";
-                }
-                break;
-            case '2':
-                if(balance < (50 + 50*BANK) ){
-                    gotoxy(32, 22); cout<<"Fondos insuficientes!!";
-                }
-                else{
-                    balance -= 50 + 50*BANK;
-                    gotoxy(34, 21); cout<<"Comision: "<<setprecision(2)<<fixed<<50*BANK;
-                    gotoxy(32, 22); cout<<"                             ";
-                }
-                break;
-            case '3':
-                if(balance < 100 + 100*BANK){
-                    gotoxy(32, 22); cout<<"Fondos insuficientes!!";
-                }
-                else{
-                    balance -= 100 + 100*BANK;
-                    gotoxy(34, 21); cout<<"Comision: "<<setprecision(2)<<fixed<<100*BANK;
-                    gotoxy(32, 22); cout<<"                             ";
-                }
-                break;
 
-        //igual, cuando es otro monto hay que saber que monto y verificar que sea correcto
-            case '4':
-                gotoxy(36, 21); cout<<"Monto: ";
-                //ciclo para verificar
-                do{
-                    cin>>aux;
-                    //si el monto es mayor que el dinero que tienes da error
-                    if(aux + aux*BANK >= balance){
-                        gotoxy(30, 23); cout<<"Ingrese un monto valido!!";
-                    }
-                }
-                //esto se repite hasta que se ingrese un monto correcto
-                while(aux<=0);
-                balance -= aux + aux*BANK;
-                gotoxy(34, 22); cout<<"Comision: "<<setprecision(2)<<fixed<<aux*BANK;
-                gotoxy(32, 23); cout<<"                             ";
-                break;
-            }
-        }
-  
-    //calculo de comision
-    Sleep(2000);
-    system("cls");
 
-    return balance;
-}
+Requerimientos no funcionales
 
-void drawSquare(int xleft, int xright, int yup, int ydown){
-    for (int i = yup; i <= ydown; i++) {
-        for (int j = xleft; j <= xright; j++) {
-            if (i == yup || i == ydown || j == xleft || j == xright) {
-                gotoxy(j, i);
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0);
-                cout << " ";
-            } 
-            else {
-                gotoxy(j, i);
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0);
-                cout << " ";
-                }
-            }
-        }
-}
 
-void doSquare(){
-    //Boton superior izquierdo
-    drawSquare(0, 5, 12, 14);
-    //Boton superior derecho
-    drawSquare(72, 78, 12, 14);
-    //Boton inferior izquierdo
-    drawSquare(0, 5, 17, 19);
-    //Boton inferior derecho
-    drawSquare(72, 78, 17, 19);
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY | BACKGROUND_BLUE);
+Cuando desarrolla un proyecto, se habla del planteamiento de soluciones ante un problema o requerimiento existente, y pues dependiendo de cada proyecto, y las personas y organizaciones implicadas en el mismo, los requerimientos grupales e individuales van a ser distintos, pero el fin del proyecto no cambia, que es el crear una herramienta que facilite y cumpla con las necesidades expuestas, si bien, se ha dicho que los requerimientos varían según el contexto en el que emergen también se pueden clasificar dependiendo de su naturaleza: Existen los requerimientos funcionales y no funcionales, y según el autor también se pueden incluir los requerimientos del dominio y del autor,
 
-}
+A manera de contraste, los requerimientos funcionales se refieren a las características del software que se está desarrollando y que tienen un impacto directo dentro del funcionamiento del mismo, como lo dice su nombre, es decir, que forman parte del algoritmo del proyecto  y describen los componentes que requiere el software, mientras que por su parte, los requerimientos no funcionales, se refieren a las restricciones y necesidades del proyecto, que no están intrínsecamente relacionadas con el proyecto, más si con otros aspectos del mismo, que especifican la calidad del software y su rentabilidad a futuro, algunos ejemplos de requisitos no funcionales son:
+
+Seguridad: se refiere a la capacidad del sistema para protegerse contra accesos no autorizados y garantizar la privacidad y confidencialidad de los datos.
+Actuación: se refiere a la capacidad del sistema para responder rápidamente a las solicitudes del usuario y procesar grandes cantidades de datos.
+Escalabilidad: se refiere a la capacidad del sistema para manejar un aumento en la cantidad de usuarios o datos sin afectar su rendimiento.
+Accesibilidad: se refiere a la capacidad del sistema para ser utilizado por personas con discapacidades físicas o cognitivas.
+Adaptabilidad: se refiere a la capacidad del sistema para adaptarse a diferentes entornos y situaciones.
+Capacidad: se refiere a la cantidad de usuarios o datos que el sistema puede manejar al mismo tiempo.
+Integridad de datos: se refiere a la precisión y consistencia de los datos almacenados en el sistema.
+Documentación: se refiere a la disponibilidad y calidad de la documentación del sistema.
+Operabilidad: se refiere a la facilidad con que el sistema puede ser operado y administrado por el personal técnico.
+Mantenibilidad: se refiere a la facilidad con que el sistema puede ser mantenido y mejorado por el personal técnico
+
+
+
+
+
+
+Conformidad: se refiere al cumplimiento de los estándares y regulaciones aplicables al sistema.
+Auditabilidad: se refiere a la capacidad del sistema para registrar y rastrear las acciones realizadas por los usuarios y el personal técnico.
+Portabilidad: se refiere a la capacidad del sistema para ser transferido entre diferentes plataformas o entornos sin necesidad de modificaciones significativas.
+Eficiencia: se refiere al uso eficiente de los recursos del sistema, como el procesador, la memoria y el almacenamiento.
+
+Estilos Arquitectónicos
+
+
+	Cuando se habla de arquitectura, la mente colectiva suele pensar en la arquitectura dentro de la construcción, aunque el término etimológicamente se refiere al acto de abstraer y darle solución a los problemas anteriormente presentados como requerimientos, el área de la arquitectura de software es acotada en los años 60´s, y desde entonces con el paso de los años y el cambio de las tecnologías han surgido distintos modelos y estilos arquitectónicos, que contienen una serie de componentes que realizan una función requerida por el sistema, que posibilitan la comunicación, la coordinación y la cooperación entre sus componentes y de qué manera se pueden integrar dichos componentes, son fundamentales para producir una guía de diseño que lleve el proyecto a la implementación de dicho estilo, los estilos arquitectónicos más comunes son:
+
+Arquitectura basada en eventos:
+
+Es un patrón de diseño que permite a una organización detectar “eventos” o momentos comerciales importantes, y actuar en consecuencia en tiempo real, lo que permite mayor flexibilidad y menor tiempo de respuesta; un evento es un cambio de estado o una actualización de un elemento: llámese momentos comerciales las transacciones de compra-venta, visitas al sitio, el mecanismo principal de comunicación entre los componentes es mediante el envío y recepción de eventos, es decir, sus servicios están desacoplados cuando no hay eventos concurriendo. Es común su presencia en aplicaciones modernas creadas con microservicios. Un ejemplo de la vida real en el que se aplica una arquitectura basada en eventos es el sistema de alerta temprana de terremotos. En este caso, los eventos sísmicos se detectan y se envían a través de un sistema de eventos que se comunica con otros sistemas para proporcionar alertas tempranas.
+.
+
+
+
+
+
+
+
+Arquitectura basada en capas:
+
+Es un estilo que separa el sistema en capas lógicas o niveles de abstracción. Cada una de las capas es construida y superpuesta sobre la anterior y el mecanismo principal es que las capas inferiores proporcionan servicios a las capas superiores. Es utilizado principalmente para separar las áreas sensibles del sistema, y así mejorar el modularidad del mismo, es de los estilos de uso más frecuente debido a su bajo costo de implementación, un ejemplo dentro del mundo laboral es la complementación de los servicios de backend a cargo del desarrollador backend, los cuales hacen de capa inferior que proporciona servicios a la capa superior la cual sería el frontend, desarrollado por el diseñador de UI
+
+
+-Arquitectura basada en servicios y microservicios:
+
+El fundamento de la arquitectura basada en servicios es la capacidad de crear servicios reutilizables. Viendo los servicios como componentes autónomos que se comunican entre si mediante protocolos estándar. Es bastante compatible con la arquitectura basada en capas, y utilizado para mejorar la autonomía de las distintas partes del sistema y la interoperabilidad de las mismas. la principal diferencia de la arquitectura basada en microservicios con respecto a la arquitectura basada en servicios es que la arquitectura basada en servicios se trabaja con capas y tiene mayor tamaño y alcance mientras que la arquitectura basada en microservicios busca construir aplicaciones como un conjunto de pequeños microservicios los cuales se relacionan con otros independientes tanto internos como externos, que se ejecuten al mismo tiempo y se enfoquen en un tarea específica, dentro de la arquitectura de microservicios se utilizan las API para conectar los microservicios. Un ejemplo de la vida real en el que se aplica una arquitectura basada en servicios es el sistema de reservas de una aerolínea. En este caso, los servicios se dividen en diferentes componentes, como el servicio de reservas de vuelos, el servicio de reservas de hoteles y el servicio de reservas de coches Cada uno de estos servicios se comunica con otros servicios a través de una API para proporcionar una experiencia de usuario integrada y sin problemas.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Los Patrones Arquitectónicos
+
+Los patrones arquitectónicos son soluciones generales que pueden ser reutilizadas en la arquitectura de software, su ubicación en el contexto de la arquitectura de software es la siguiente: Mientras que los estilos arquitectónicos tienen una mayor escala y un nivel de abstracción más altos, por su parte los patrones arquitectónicos se encuentran a un nivel más bajo, y son la forma de aplicación de los estilos; como lo dice su nombre, el término patrón se refiere a la repetición lógica y esquematizada de ciertas características, he de ahí que se hable de la reutilización de aspectos del sistema, en otras palabras, los patrones arquitectónicos son soluciones a problemas de arquitectura de software dentro del desarrollo de software que ofrecen una descripción de sus elementos y el tipo de relación que tienen junto con un conjunto de restricciones sobre como pueden ser usados. Los 10 patrones arquitectónicos más usados son los siguientes:
+
+Patrón de capas:
+
+    Es utilizado para estructurar programas compuestos en subtareas, agrupadas en distintos subniveles de abstracción, la división y clasificación es fundamental en este patrón, ya que propone un modelo de capas, donde cada capa proporciona servicios a la capa superior, usadas mayoritariamente para el desarrollo de Aplicaciones de escritorio de carácter general o aplicaciones de comercio online.
+
+   Es posible diseñar e implementar modelos propios de capas, aunque el más habitual es el siguiente:
+
+-Capa de presentación (UI)
+	
+-Capa de aplicación (servicios)
+	
+-Capa de lógica de negocios (Dominio)
+
+-Capa de acceso a datos (Persistencia de data)
+
+	Sus principales ventajas son que una misma capa inferior puede ser utilizada por distintas capas en niveles más altos, y esto hace más sencillo el proceso de estandarización del sistema, dados sus niveles definidos, por lo que los cambios pueden ser aplicados a una sola capa sin afectar a las demás, como en la programación modular, aunque, por otro lado, No pueden ser aplicados universalmente y es posible que ciertas capas deban ser saltadas en una situación dada.
+
+
+
+
+
+
+
+
+
+Patrón cliente-servidor
+
+	Este patrón presenta tan solo dos capas y una relación unilateral, un cliente y un servidor, el cliente le solicita al servidor de sus servicios, y el segundo se los proporciona al primero, son usados en la mayoría de aplicaciones online, por ejemplo las bancas online, o el almacenamiento en iCloud, su mayor ventaja es que es útil para modelar un conjunto de servicios los cuales pueden ser solicitados por los clientes, aunque su desventaja es que las solicitudes son manejadas en hilos separados en el servidor, y pueden llegar a tener problemas ante las solicitudes concurrentes.
+	
+
+ Patrón maestro-esclavo:
+
+	Constituido fundamentalmente por el maestro y los esclavos, siendo el primero quien ha de distribuir el trabajo entre los componentes segundos, y ha de realizar los cálculos finales con los resultados retornados por los esclavos. Por ejemplo, la función principal (maestro) de un programa ha de enviar parámetros y órdenes a sus funciones secundarias (esclavos), quienes ejecutarán sus instrucciones y regresarán resultados que serán acumulados e interpretados por la función principal.
+
+	Su principal ventaja es la precisión, y la posibilidad de implementar esclavos distintos para diversificar las tareas del sistema, pero los esclavos están aislados entre sí, y es posible que haya un retraso en la distribución de la información, lo que puede ser un problema para sistemas de ejecución y cálculo en tiempo real.
+
+Patrón de filtro de tubería.
+
+	Útil para la estructuración de sistemas que procesan secuencias de datos para convertirlos en información. Su principal característica es que entre cada sección de procesamiento se ha ubicado un filtro los cuales retienen la información irrelevante que no se desea que llegue a la sección final, los métodos de impresión en pantalla y lectura de documentos de los ordenadores los utilizan, siendo conocido como el búfer, quien retiene temporalmente la información para ser entregada sistemáticamente, también es aplicada en los compiladores, donde los filtros realizan el análisis sintáctico y las redes neuronales
+
+	Se suele preferir un patrón de filtros, gracias a que genera sistemas de escalabilidad viable, y es sencillo añadir y reutilizar filtros de información, aunque el proceso de filtrado consume capacidad de procesamiento, lo que ralentiza en sistema.
+
+Patrón de agente o Broker:
+
+	La principal funcionalidad del Broker es conectar componentes que se encuentran desacoplados entre sí, habiendo un cliente quien solicita los datos, pero nunca a los componentes mismos, sino al Broker, quien será el encargado de solicitar los servicios al componente correspondiente, haciendo funciones de intermediario.
+
+	
+Permite cambiar dinámicamente los componentes del sistema, añadir, eliminar o reubicar componentes, además de ser transparente el traspaso de datos desde la perspectiva del desarrollador, en caso de desear aplicarlo, es de carácter menester estandarizar la descripción de los servicios del sistema para que todos puedan ser interpretados por un mismo broker.
+
+Patrón de igual a igual (peer to peer)
+
+	A los componentes individuales se les conoce como pares (peer) y pueden ejercer funciones tanto de servidor como de cliente dependiendo de los requerimientos del contexto, y su rol cambia dinámicamente con el tiempo, es utilizado en protocolos de multimedia en streaming y redes de intercambio de archivos, donde destaca el mayor software de piratería de archivos multimedia en todo el planeta Utorrent.
+
+	Permite el alojamiento descentralizado de información, cuenta con bastante robustez ante fallas en cualquiera de sus nodos (gracias a su redundancia de datos), aunque cierto elemento no se encuentre alojado en su totalidad en ningún servidor, si sus partes complementarias están repartidas parcialmente en varios servidores es posible restablecerlo, su lado negativo, es que al depender de los mismos clientes como servidores es un sistema que depende de la voluntad de los clientes, por lo que no se puede garantizar la calidad del servicio, y el rendimiento depende del número de nodos.
+
+Patrón de bus de evento.
+
+	Trabaja con eventos, y utiliza principalmente 4 componentes: la fuente de evento, la escucha de evento, el canal de transmisión y el bus de evento. Donde existe un canal (fuente de evento) para que las fuentes publiquen sus mensajes, y otro para que sean escuchados por los oyentes (escucha de evento), este patrón es utilizado principalmente en el desarrollo móvil, específicamente en Android, sobre todo en el sistema de notificaciones.
+
+	Se pueden añadir con facilidad nuevas fuentes, suscriptores y conexiones, aunque la escalabilidad del sistema puede ser problemática, ya que todos los mensajes viajan por un mismo bus de eventos.
+
+Patrón de modelo-vista-controlador
+
+	Compuesto por las siglas MVC (modelo, vista, controlador) siendo el modelo quien contiene las funciones y los datos básicos, la vista el medio por el que se puede observar la información del usuario y el controlador quien maneja los datos de entrada del usuario. Al desacoplar el código en bloques es fácilmente reutilizable, lo que ha popularizado este patrón para el desarrollo web, especialmente en los frameworks.
+
+	Esta división permite tener múltiples vistas de un mismo modelo, el cual puede ser conectado y desconectado en tiempo de ejecución, aunque incrementa la complejidad de un sistema, y puede llevar a actualizaciones innecesarias para permitir acciones del usuario.
+
+
+
+
+Patrón de pizarra.
+
+	Es un patrón flexible, aplicable cuando no se puede abarcar una solución determinística, se divide en tres componentes fundamentales: la pizarra, donde se alojan los objetos del espacio de solución de manera estructurada en global; la fuente de conocimiento, la cual contiene módulos especializados; y el componente de control, el cual selecciona, configura y ejecuta los módulos requeridos, se le llama pizarra porque todos los componentes tienen acceso a la pizarra en la cual pueden escribir los nuevos objetos particulares que se necesiten y buscar componentes en la misma, es utilizado en el reconocimiento de voz.
+
+	Permite crear aplicaciones dinámicas en las que se añadan nuevas aplicaciones y se extienda la estructura del espacio de datos, pero es difícil manejar la memoria a deseo el 100% de las veces, ya que todas las aplicaciones son afectadas por los cambios, y es necesario que los componentes se sincronicen
+
+
+Patrón de intérprete
+
+	Este modelo se utiliza para diseñar un elemento que interpreta programas escritos en un lenguaje especializado. Especifica principalmente cómo calcular las líneas de programas, conocidas como frases o expresiones escritas en un idioma específico. se utiliza en los lenguajes como SQL para consultar bases de datos, o para describir protocolos de comunicación.
+
+	Es posible desarrollar un comportamiento altamente dinámico, y mejora la flexibilidad del sistema, porque es sencillo reemplazar un programa interpretado, pero a costo de una mayor velocidad de ejecución comparado con un lenguaje compilado.
+
+
+
+
+
+
+
+
+
+
+Conclusión
+
+       Como conclusión y en base a nuestra experiencia podemos decir que diseñar con patrones no es aplicar todos los patrones que se conocen en el diseño del software, sino resolver cada problema de diseño que surge con un patrón apropiado, teniendo en cuenta que un uso excesivo de patrones fácilmente terminará en una arquitectura compleja
