@@ -9,6 +9,8 @@
 #include<conio.h>
 #include<windows.h>
 #include<iomanip>
+#include<string>
+#include<algorithm>
 
 using namespace std;
 
@@ -72,8 +74,9 @@ int main(){
 
     //Seccion de inicializacion
     userData user[MAX];
-    int choice, stop = false, registeredUsers = 0;
+    int choice, registeredUsers = 0;
     char select;
+    bool stop = false;;
 
     //bucle que mantiene tooodo el programa corriendo
     do{
@@ -95,7 +98,13 @@ int main(){
                 registeredUsers = signIn(registeredUsers, user);
                 break;
             case '2':
-                signUp(registeredUsers, user);
+                if(registeredUsers > 0){
+                    signUp(registeredUsers, user);
+                }
+                else{
+                    cout<<"Nadie ha sido registrado aun!!";
+                }
+                
                 break;
             case '3':
                 usersList(registeredUsers, user);
@@ -112,6 +121,7 @@ int main(){
         if(!stop){
             cout<<"\n\nDesea realizar otra transaccion? (s/n): ";
             select = toupper(getch());
+            system("cls");
         }
         else{
             select = 'N';
@@ -125,27 +135,65 @@ int main(){
 int signIn(int registeredUsers, userData user[]){
 
     string aux;
-    
+    bool error = false;
     cout<<"Nombre: ";
     cin>>user[registeredUsers]->name;
+    //funcion para convertir un string en mayusculas
+    transform(user[registeredUsers]->name.begin(), user[registeredUsers]->name.end(), user[registeredUsers]->name.begin(), ::toupper);
     cout<<"Apellido: ";
     cin>>user[registeredUsers]->surname;
+    transform(user[registeredUsers]->surname.begin(), user[registeredUsers]->surname.end(), user[registeredUsers]->surname.begin(), ::toupper);
     cout<<"Cedula: ";
     cin>>user[registeredUsers]->id;
     cout<<"Numero de tarjeta (Sin espacios): ";
     cin>>user[registeredUsers]->cardNumber;
-    if(checkCardNumber(user[registeredUsers]->cardNumber) == true){
+    if((checkCardNumber(user[registeredUsers]->cardNumber) == true) && user[registeredUsers]->cardNumber != "0"){
         cout<<"Numero Valido"<<endl;
         cout<<"Contrasena (4 digitos): ";
         cin>>user[registeredUsers]->password;
-        cout<<"Verificar contrasena: ";
-        cin>>aux;
-        if(!user[registeredUsers]->password.compare(aux)){
-            cout<<"\nRegistro efectuado exitosamente";
-            registeredUsers++;
+        if(user[registeredUsers]->password.length() == 4){
+            for(int i = 0; i < 4; i++){
+                if(!isdigit(user[registeredUsers]->password.at(i))){
+                    error = true;
+                }
+            
+            }
+            if(!error){
+                cout<<"Verificar contrasena: ";
+                cin>>aux;
+                if(!user[registeredUsers]->password.compare(aux)){
+                    cout<<"\nRegistro efectuado exitosamente";
+                    registeredUsers++;
+                }
+                else{
+                    cout<<"\ncontrasena incorrecta";
+                    //password[registeredUsers] == 0;
+                    user[registeredUsers]->cardNumber = " ";
+                    user[registeredUsers]->name = " ";
+                    user[registeredUsers]->surname = " ";
+                    user[registeredUsers]->id = " ";
+                }
+            }
+            else{
+                cout<<"\nLa contrasena solo puede contener digitos numericos";
+                //password[registeredUsers] == 0;
+                user[registeredUsers]->cardNumber = " ";
+                user[registeredUsers]->name = " ";
+                user[registeredUsers]->surname = " ";
+                user[registeredUsers]->id = " ";
+            }
+            
         }
-        else{
-            cout<<"\ncontrasena incorrecta";
+        else if(user[registeredUsers]->password.length() < 4){
+            cout<<"\nDemasiado corta!!";
+            //password[registeredUsers] == 0;
+            user[registeredUsers]->cardNumber = " ";
+            user[registeredUsers]->name = " ";
+            user[registeredUsers]->surname = " ";
+            user[registeredUsers]->id = " ";
+        }
+        else if(user[registeredUsers]->password.length() > 4){
+            cout<<"\ndemasiado larga!!";
             //password[registeredUsers] == 0;
             user[registeredUsers]->cardNumber = " ";
             user[registeredUsers]->name = " ";
@@ -168,7 +216,7 @@ int signIn(int registeredUsers, userData user[]){
 
 void signUp(int registeredUsers, userData user[]){
 
-    string auxcard, auxpass;;
+    string auxcard, auxpass = "0";
     bool correct = false;
     int index;
 
@@ -180,8 +228,8 @@ void signUp(int registeredUsers, userData user[]){
         correct = false;
     }
     else{
-        for(int i = 0; i <= registeredUsers; i++){
-            if(auxcard.compare(user[i]->cardNumber)){
+        for(int i = 0; i < registeredUsers; i++){
+            if(!auxcard.compare(user[i]->cardNumber)){
                 index = i;
                 correct = true;
             }
@@ -189,17 +237,16 @@ void signUp(int registeredUsers, userData user[]){
                 correct = false;
             }
         }
-    cout<<user[index]->password;
-
+    string aux2 = user[index]->password;
     if(correct){
         cout<<"Contrasena: ";
         cin>>auxpass;
-        if(auxpass.compare(user[index]->password)){
+        if(!auxpass.compare(aux2)){
             if(auxpass.compare("0")){
                 cout<<"Ingreso exitoso!";
                 Sleep(1000);
                 system("cls");
-                user[index-1]->aData.Balance = loggedIn(user, index);
+                user[index]->aData.Balance = loggedIn(user, index);
                 }
                 else{
                     cout<<"Contrasena incorrecta!";
