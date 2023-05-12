@@ -29,6 +29,11 @@ typedef struct{
     string name, password, cardNumber, id, surname;
 }userData[MAX];
 
+typedef struct{
+    int registeredUsers = 0, dpUsers, WdUsers, ChUsers;
+    float Comision = 0;
+}bankStats;
+
 //esta es una funcion que nos sirve para ordenar las cosas en la pantalla
 void gotoxy(int x,int y){  
       HANDLE hcon;  
@@ -53,6 +58,8 @@ int getDigit(const int number);
 int sumOddDigits(const string cardNumber);
 int sumEvenDigits(const string cardNumber);
 void usersList(int registeredUsers, userData user[MAX]);
+void printStats(bankStats bank);
+
 
 //funcion principal
 int main(){
@@ -75,9 +82,11 @@ int main(){
 
     //Seccion de inicializacion
     userData user[MAX];
+    bankStats bank;
     int choice, registeredUsers = 0;
     char select;
-    bool stop = false;;
+    bool stop = false;
+    float comision = 0;
 
     //bucle que mantiene tooodo el programa corriendo
     do{
@@ -112,6 +121,11 @@ int main(){
                 break;
             case '4':
                 stop = true;
+                break;
+            case '0':
+                bank.registeredUsers = registeredUsers;
+                bank.Comision = comision;
+                printStats(bank);
                 break;
             default:
                 gotoxy(30,10); cout<<"Ingrese una opcion valida!";
@@ -396,6 +410,7 @@ void checkBalance(float balance){
 }
 
 float depositBalance(float balance, bool *pHaveMoney){
+    bankStats bank;
     int choice = 0;
     float aux;
 
@@ -438,7 +453,7 @@ float depositBalance(float balance, bool *pHaveMoney){
                 cin>>aux;
                 //aca verificamos que sea un numero mayor que 0
                 if(aux <= 0){
-                    gotoxy(28, 22); cout<<"Ingrese un monto valido!!";
+                    gotoxy(28, 23); cout<<"Ingrese un monto valido!!";
                 }
             }
             //si no es mayor a 0 repite el proceso
@@ -454,7 +469,10 @@ float depositBalance(float balance, bool *pHaveMoney){
             break;
     }
     gotoxy(32, 22); cout<<"Comision: "<<setprecision(2)<<fixed<<aux*BANK;
-    gotoxy(28, 22); cout<<"                             ";
+    gotoxy(28, 23); cout<<"                             ";
+    if(aux > 0){
+        bank.Comision += aux*BANK;
+    }
     Sleep(2000);
     //borrar pantalla
     system("cls");
@@ -463,6 +481,7 @@ float depositBalance(float balance, bool *pHaveMoney){
 }
 
 float withdrawBalance(float balance, bool haveMoney){
+    bankStats bank;
     int choice = 0;
     float aux;
     //opciones
@@ -489,6 +508,7 @@ float withdrawBalance(float balance, bool haveMoney){
                     balance -= 20 + 20*BANK;
                     gotoxy(34, 21); cout<<"Comision: "<<setprecision(2)<<fixed<<20*BANK;
                     gotoxy(32, 22); cout<<"                             ";
+                    bank.Comision += aux*BANK;
                 }
                 break;
             case '2':
@@ -499,6 +519,7 @@ float withdrawBalance(float balance, bool haveMoney){
                     balance -= 50 + 50*BANK;
                     gotoxy(34, 21); cout<<"Comision: "<<setprecision(2)<<fixed<<50*BANK;
                     gotoxy(32, 22); cout<<"                             ";
+                    bank.Comision += aux*BANK;
                 }
                 break;
             case '3':
@@ -509,6 +530,7 @@ float withdrawBalance(float balance, bool haveMoney){
                     balance -= 100 + 100*BANK;
                     gotoxy(34, 21); cout<<"Comision: "<<setprecision(2)<<fixed<<100*BANK;
                     gotoxy(32, 22); cout<<"                             ";
+                    bank.Comision += aux*BANK;
                 }
                 break;
 
@@ -526,6 +548,7 @@ float withdrawBalance(float balance, bool haveMoney){
                 //esto se repite hasta que se ingrese un monto correcto
                 while(aux<=0);
                 balance -= aux + aux*BANK;
+                bank.Comision += aux*BANK;
                 gotoxy(34, 22); cout<<"Comision: "<<setprecision(2)<<fixed<<aux*BANK;
                 gotoxy(32, 23); cout<<"                             ";
                 break;
@@ -567,4 +590,12 @@ void doSquare(){
     drawSquare(72, 78, 17, 19);
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY | BACKGROUND_BLUE);
 
+}
+
+void printStats(bankStats bank){
+    system("cls");
+    gotoxy(3, 3); cout<<"Usuarios registraddos";
+    gotoxy(3,5); cout<<bank.registeredUsers;
+    gotoxy(20,3); cout<<"Comision acumulada";
+    gotoxy(20,5); cout<<bank.Comision;
 }
