@@ -1,0 +1,56 @@
+object myLoginForm: TmyLoginForm
+  Left = 0
+  Top = 0
+  Caption = 'Login'
+  ClientHeight = 210
+  ClientWidth = 543
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object loginButton: TButton
+    Position.X = 352.000000000000000000
+    Position.Y = 56.000000000000000000
+    Size.Width = 137.000000000000000000
+    Size.Height = 49.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 17
+    Text = 'Entrar'
+    OnClick = loginButtonClick
+  end
+  object cardNumberText: TLabel
+    Position.X = 40.000000000000000000
+    Position.Y = 72.000000000000000000
+    Text = 'Numero de tarjeta'
+    TabOrder = 19
+  end
+  object cardnumberInput: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 21
+    Position.X = 152.000000000000000000
+    Position.Y = 64.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 41.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object passwordText: TLabel
+    Position.X = 40.000000000000000000
+    Position.Y = 120.000000000000000000
+    Text = 'Contrase'#241'a'
+    TabOrder = 18
+  end
+  object passwordInput: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 20
+    Position.X = 152.000000000000000000
+    Position.Y = 120.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 41.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object errorText: TLabel
+    Position.X = 360.000000000000000000
+    Position.Y = 120.000000000000000000
+    TabOrder = 22
+  end
+end

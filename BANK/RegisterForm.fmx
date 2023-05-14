@@ -1,0 +1,256 @@
+object myRegisterForm: TmyRegisterForm
+  Left = 0
+  Top = 0
+  Caption = 'Registration'
+  ClientHeight = 480
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnClose = FormClose
+  DesignerMasterStyle = 0
+  object nameInput: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 7
+    Position.X = 136.000000000000000000
+    Position.Y = 80.000000000000000000
+    Size.Width = 153.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object nameText: TLabel
+    Position.X = 40.000000000000000000
+    Position.Y = 80.000000000000000000
+    Text = 'Nombre'
+    TabOrder = 18
+  end
+  object surnameLabel: TLabel
+    Position.X = 40.000000000000000000
+    Position.Y = 120.000000000000000000
+    Text = 'Apellido'
+    TabOrder = 16
+  end
+  object vrfpasswordtext: TLabel
+    Position.X = 344.000000000000000000
+    Position.Y = 200.000000000000000000
+    Text = 'Verificar contrase'#241'a'
+    TabOrder = 15
+  end
+  object creditcardtext: TLabel
+    Position.X = 344.000000000000000000
+    Position.Y = 120.000000000000000000
+    Text = 'Numero de tarjeta'
+    TabOrder = 13
+  end
+  object idText: TLabel
+    Position.X = 40.000000000000000000
+    Position.Y = 160.000000000000000000
+    Text = 'Cedula'
+    TabOrder = 12
+  end
+  object passwordText: TLabel
+    Position.X = 344.000000000000000000
+    Position.Y = 160.000000000000000000
+    Text = 'Contrase'#241'a'
+    TabOrder = 8
+  end
+  object surnameInput: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 5
+    Position.X = 136.000000000000000000
+    Position.Y = 120.000000000000000000
+    Size.Width = 153.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object idInput: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 4
+    Position.X = 136.000000000000000000
+    Position.Y = 160.000000000000000000
+    Size.Width = 153.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object creditcardInput: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 2
+    Position.X = 456.000000000000000000
+    Position.Y = 120.000000000000000000
+    Size.Width = 153.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object passwordInput: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 1
+    Position.X = 456.000000000000000000
+    Position.Y = 160.000000000000000000
+    Size.Width = 153.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object vrfpasswordInput: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 0
+    Position.X = 456.000000000000000000
+    Position.Y = 200.000000000000000000
+    Size.Width = 153.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object registerButton: TButton
+    Position.X = 456.000000000000000000
+    Position.Y = 408.000000000000000000
+    Size.Width = 137.000000000000000000
+    Size.Height = 49.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 19
+    Text = 'Registrarse'
+    OnClick = registerButtonClick
+  end
+  object Emailtext: TLabel
+    Position.X = 344.000000000000000000
+    Position.Y = 80.000000000000000000
+    Text = 'Correo'
+    TabOrder = 9
+  end
+  object emailInput: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 6
+    Position.X = 456.000000000000000000
+    Position.Y = 80.000000000000000000
+    Size.Width = 153.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object civilStatusText: TLabel
+    Position.X = 32.000000000000000000
+    Position.Y = 360.000000000000000000
+    Text = 'Estado civil'
+    TabOrder = 11
+  end
+  object RadioButton1: TRadioButton
+    GroupName = 'CivilStatus'
+    Position.X = 128.000000000000000000
+    Position.Y = 360.000000000000000000
+    TabOrder = 27
+    Text = 'Solter@'
+  end
+  object RadioButton2: TRadioButton
+    GroupName = 'CivilStatus'
+    Position.X = 200.000000000000000000
+    Position.Y = 360.000000000000000000
+    TabOrder = 23
+    Text = 'Casad@'
+  end
+  object RadioButton3: TRadioButton
+    GroupName = 'CivilStatus'
+    Position.X = 280.000000000000000000
+    Position.Y = 360.000000000000000000
+    TabOrder = 22
+    Text = 'Viud@'
+  end
+  object IdoptionButton1: TRadioButton
+    GroupName = 'IDtype'
+    Position.X = 136.000000000000000000
+    Position.Y = 200.000000000000000000
+    TabOrder = 21
+    Text = 'V'
+  end
+  object IdoptionButton2: TRadioButton
+    GroupName = 'IDtype'
+    Position.X = 192.000000000000000000
+    Position.Y = 200.000000000000000000
+    TabOrder = 20
+    Text = 'E'
+  end
+  object Calendar1: TCalendar
+    Date = 45059.000000000000000000
+    Position.X = 456.000000000000000000
+    Position.Y = 248.000000000000000000
+    Size.Width = 161.000000000000000000
+    Size.Height = 121.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 28
+  end
+  object stateText: TLabel
+    Position.X = 40.000000000000000000
+    Position.Y = 232.000000000000000000
+    Text = 'Estado'
+    TabOrder = 30
+  end
+  object PopupBox1: TPopupBox
+    Position.X = 136.000000000000000000
+    Position.Y = 232.000000000000000000
+    Size.Width = 153.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 31
+  end
+  object DirectionText: TLabel
+    Position.X = 40.000000000000000000
+    Position.Y = 280.000000000000000000
+    Text = 'Direcci'#243'n'
+    TabOrder = 29
+  end
+  object directionInput: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 3
+    Position.X = 136.000000000000000000
+    Position.Y = 280.000000000000000000
+    Size.Width = 201.000000000000000000
+    Size.Height = 65.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object Label1: TLabel
+    StyledSettings = [Style, FontColor]
+    Position.X = 240.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 184.000000000000000000
+    Size.Height = 49.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.Font.Size = 40.000000000000000000
+    Text = 'Registro'
+    TabOrder = 32
+  end
+  object BirthdayText: TLabel
+    Position.X = 336.000000000000000000
+    Position.Y = 256.000000000000000000
+    Text = 'Fecha de nacimiento'
+    TabOrder = 14
+  end
+  object genderText: TLabel
+    Position.X = 32.000000000000000000
+    Position.Y = 392.000000000000000000
+    Text = 'Genero'
+    TabOrder = 10
+  end
+  object genderoption1: TRadioButton
+    GroupName = 'genderOption'
+    Position.X = 128.000000000000000000
+    Position.Y = 392.000000000000000000
+    TabOrder = 26
+    Text = 'Masculino'
+  end
+  object genderoption2: TRadioButton
+    GroupName = 'genderOption'
+    Position.X = 208.000000000000000000
+    Position.Y = 392.000000000000000000
+    TabOrder = 25
+    Text = 'Femenino'
+  end
+  object genderoption3: TRadioButton
+    GroupName = 'genderOption'
+    Position.X = 288.000000000000000000
+    Position.Y = 392.000000000000000000
+    TabOrder = 24
+    Text = 'Otro'
+  end
+  object resultText: TLabel
+    Position.X = 144.000000000000000000
+    Position.Y = 432.000000000000000000
+    TabOrder = 17
+  end
+end

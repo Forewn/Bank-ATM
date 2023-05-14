@@ -576,7 +576,7 @@ void drawSquare(int xleft, int xright, int yup, int ydown){
                 cout << " ";
                 }
             }
-        }
+        }git
 }
 
 void doSquare(){
